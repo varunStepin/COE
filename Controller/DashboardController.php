@@ -389,6 +389,7 @@ class DashboardController extends AppController
 		$this->loadModel('DsAiTrainedStudent');
 		$this->loadModel('DsAiTrainedFaculty');
 		$this->loadModel('DsAiTrainedProfessional');
+		$this->loadModel('DsSolutionsAdopted');
 		$phase = $this->Session->read('Phase');
 
 		if ($type == 'DsAiPhyAccStartup') {
@@ -523,7 +524,7 @@ class DashboardController extends AppController
 		$this->loadModel('AerospaceDefenseCourse');
 
 		$this->loadModel('ManageStartupFacilitation');
-		$phase=$this->Session->read('Phase');
+		$phase = $this->Session->read('Phase');
 		if ($type != '' && $year != '' && $month != '') {
 			$this->layout = 'ajax';
 
@@ -1309,93 +1310,94 @@ class DashboardController extends AppController
 	}
 	/*-----------------------Fabless Dashboard------------------------------------------*/
 	public function fablessDashboard($type = null, $year = null, $month = null)
-    {
-        $phase = $this->Session->read('Phase');
-        if ($type != '' && $year != '' && $month != '') {
-            $this->layout = 'ajax';
+	{
+		$this->loadModel('SuccessfulCompany');
+		$this->loadModel('ExitedCompany');
+		$phase = $this->Session->read('Phase');
+		if ($type != '' && $year != '' && $month != '') {
+			$this->layout = 'ajax';
 
-            if ($type == 'Companies') $model = 'Companies';
-            else if ($type == 'Partners') $model = 'PartnerDetail';
-            else if ($type == 'Cohort') $model = 'IncubateeDetail';
+			if ($type == 'Companies') $model = 'Companies';
+			else if ($type == 'Partners') $model = 'PartnerDetail';
+			else if ($type == 'Cohort') $model = 'IncubateeDetail';
+			else if ($type == 'SuccessfulCompany') $model = 'SuccessfulCompany';
+			else if ($type == 'ExitedCompany') $model = 'ExitedCompany';
+			$list = $this->$model->find('all', array(
+				'conditions' => array('year' => $year, 'month' => $month, 'phase' => $phase),
+				'order' => array('id DESC')
+			));
 
-            $list = $this->$model->find('all', array(
-                'conditions' => array('year' => $year, 'month' => $month, 'phase' => $phase),
-                'order' => array('id DESC')
-            ));
+			$title = $type . ' Of ' . $month . ' - ' . $year;
+			$this->set('list', $list);
+			$this->set('title', $title);
+			$this->set('type', $model);
+			// print_r($list);
+			// print_r($model);
+			$this->render('fabless_dashboard_pop_up');
+		} else {
+			$this->layout = 'fab_layout';
+			$this->_userSessionCheckout();
+			$years = array_reverse($this->getYear());
+			$month = $this->getMonth();
+			$modal_name = array('Companies', 'PartnerDetail', 'IncubateeDetail', 'SuccessfulCompany', 'ExitedCompany');
+			$call_name = array('Companies', 'Partners', 'Cohort', 'SuccessfulCompany', 'ExitedCompany');
+			$final_array = array();
+			foreach ($modal_name as $count => $modal) {
+				$Companies = $this->$modal->find('all', array(
+					'fields' => array('COUNT(*) AS count', 'year', 'month'),
+					'group' => array('year', 'month'),
+					'conditions' => array('phase' => $phase)
+				));
+				$callName = $call_name[$count];
 
-            $title = $type . ' Of ' . $month . ' - ' . $year;
-            $this->set('list', $list);
-            $this->set('title', $title);
-            $this->set('type', $model);
-            // print_r($list);
-            // print_r($model);
-            $this->render('fabless_dashboard_pop_up');
-        } else {
-            $this->layout = 'fab_layout';
-            $this->_userSessionCheckout();
-            $years = array_reverse($this->getYear());
-            $month = $this->getMonth();
+				foreach ($years as $year) {
+					$final_array[$callName]['Achieve']['Year'][$year] = 0;
+					$final_array[$callName]['Target']['Year'][$year] = 0;
 
-            $modal_name = array('Companies', 'PartnerDetail', 'IncubateeDetail');
-            $call_name = array('Companies', 'Partners', 'Cohort');
+					foreach ($month as $m) {
+						$final_array[$callName]['Achieve'][$year][$m] = 0;
+						$final_array[$callName]['Target'][$year][$m] = 0;
+					}
+				}
+				foreach ($Companies as $item) {
+					$key = array_keys($item);
+					$key = (isset($item[$key[1]]['year']) ? $key[1] : $key[0]);
+					$y = (isset($item[$key]['year']) ? $item[$key]['year'] : $item[$key]['year']);
+					$m = (isset($item[$key]['month']) ? $item[$key]['month'] : $item[$key]['month']);
 
-            $final_array = array();
+					$final_array[$callName]['Achieve'][$y][$m] = $item[0]['count'];
+					$final_array[$callName]['Achieve']['Year'][$y] = array_sum($final_array[$callName]['Achieve'][$y]);
+					$final_array[$callName]['Achieve']['count'] = array_sum($final_array[$callName]['Achieve']['Year']);
+				}
+			}
 
-            foreach ($modal_name as $count => $modal) {
-                $Companies = $this->$modal->find('all', array(
-                    'fields' => array('COUNT(*) AS count', 'year', 'month'),
-                    'group' => array('year', 'month'),
-                    'conditions' => array('phase' => $phase)
-                ));
-                $callName = $call_name[$count];
+			/*-------------------------------------- Target -------------------------------------*/
+			$targets = $this->Targets->find('all', array(
+				'conditions' => array('type IN' => $call_name, 'phase' => $phase),
+				'fields' => array('SUM(count) AS sum', 'year', 'month', 'type'),
+				'group' => array('type', 'year', 'month')
+			));
 
-                foreach ($years as $year) {
-                    $final_array[$callName]['Achieve']['Year'][$year] = 0;
-                    $final_array[$callName]['Target']['Year'][$year] = 0;
+			foreach ($targets as $item) {
+				$y = $item['Targets']['year'];
+				$m = $item['Targets']['month'];
+				$type = $item['Targets']['type'];
 
-                    foreach ($month as $m) {
-                        $final_array[$callName]['Achieve'][$year][$m] = 0;
-                        $final_array[$callName]['Target'][$year][$m] = 0;
-                    }
-                }
-                foreach ($Companies as $item) {
-                    $key = array_keys($item);
-                    $key = (isset($item[$key[1]]['year']) ? $key[1] : $key[0]);
-                    $y = (isset($item[$key]['year']) ? $item[$key]['year'] : $item[$key]['year']);
-                    $m = (isset($item[$key]['month']) ? $item[$key]['month'] : $item[$key]['month']);
-
-                    $final_array[$callName]['Achieve'][$y][$m] = $item[0]['count'];
-                    $final_array[$callName]['Achieve']['Year'][$y] = array_sum($final_array[$callName]['Achieve'][$y]);
-                    $final_array[$callName]['Achieve']['count'] = array_sum($final_array[$callName]['Achieve']['Year']);
-                }
-            }
-
-            /*-------------------------------------- Target -------------------------------------*/
-            $targets = $this->Targets->find('all', array(
-                'conditions' => array('type IN' => $call_name,'phase'=>$phase),
-                'fields' => array('SUM(count) AS sum', 'year', 'month', 'type'),
-                'group' => array('type', 'year', 'month')
-            ));
-
-            foreach ($targets as $item) {
-                $y = $item['Targets']['year'];
-                $m = $item['Targets']['month'];
-                $type = $item['Targets']['type'];
-
-                $final_array[$type]['Target'][$y][$m] = $item[0]['sum'];
-                $final_array[$type]['Target']['Year'][$y] = array_sum($final_array[$type]['Target'][$y]);
-                $final_array[$type]['Target']['count'] = array_sum($final_array[$type]['Target']['Year']);
-            }
-            $this->set('final_array', $final_array);
-        }
-    }
+				$final_array[$type]['Target'][$y][$m] = $item[0]['sum'];
+				$final_array[$type]['Target']['Year'][$y] = array_sum($final_array[$type]['Target'][$y]);
+				$final_array[$type]['Target']['count'] = array_sum($final_array[$type]['Target']['Year']);
+			}
+			$this->set('final_array', $final_array);
+			//print_r($final_array);
+		}
+	}
 
 
 
 	/*-----------------------K-Tech Dashboard------------------------------------------*/
 	public function ktechCenterDashboard($type = null, $year = null, $month = null)
 	{
-		$phase=$this->Session->read('Phase');
+		$phase = $this->Session->read('Phase');
 		if ($type != '' && $year != '' && $month != '') {
 			$this->layout = 'ajax';
 
@@ -1407,7 +1409,7 @@ class DashboardController extends AppController
 			else if ($type == 'Startup') $model = 'KtechFundRaisedStartup';
 
 			$list = $this->$model->find('all', array(
-				'conditions' => array('year' => $year, 'month' => $month,'phase'=>$phase),
+				'conditions' => array('year' => $year, 'month' => $month, 'phase' => $phase),
 				'order' => array('id DESC')
 			));
 
@@ -1426,37 +1428,37 @@ class DashboardController extends AppController
 
 			/*------------------------------ ManageAgricultureInnovation --------------------------------*/
 			$manageAgricultureInnovation = $this->ManageAgricultureInnovation->find('all', array(
-				'conditions'=>array('phase'=>$phase),
+				'conditions' => array('phase' => $phase),
 				'fields' => array('COUNT(*) AS count', 'year', 'month'),
 				'group' => array('year', 'month')
 			));
 			/*------------------------------ ManageProblemStatement ----------------------------------*/
 			$ManageProblemStatement = $this->ManageProblemStatement->find('all', array(
-				'conditions'=>array('phase'=>$phase),
+				'conditions' => array('phase' => $phase),
 				'fields' => array('COUNT(*) AS count', 'year', 'month'),
 				'group' => array('year', 'month')
 			));
 			/*------------------------------ KtechEventConducted ----------------------------------*/
 			$KtechEventConducted = $this->KtechEventConducted->find('all', array(
-				'conditions'=>array('phase'=>$phase),
+				'conditions' => array('phase' => $phase),
 				'fields' => array('COUNT(*) AS count', 'year', 'month'),
 				'group' => array('year', 'month')
 			));
 			/*------------------------------ KtechPartnership ----------------------------------*/
 			$KtechPartnership = $this->KtechPartnership->find('all', array(
-				'conditions'=>array('phase'=>$phase),
+				'conditions' => array('phase' => $phase),
 				'fields' => array('COUNT(*) AS count', 'year', 'month'),
 				'group' => array('year', 'month')
 			));
 			/*------------------------------ KtechFundRaisedStartup ----------------------------------*/
 			$KtechFundRaisedStartup = $this->KtechFundRaisedStartup->find('all', array(
-				'conditions'=>array('phase'=>$phase),
+				'conditions' => array('phase' => $phase),
 				'fields' => array('COUNT(*) AS count', 'year', 'month'),
 				'group' => array('year', 'month')
 			));
 			/*-------------------------------------- Target -------------------------------------*/
 			$targets = $this->Targets->find('all', array(
-				'conditions' => array('phase'=>$phase,'type IN' => array('AgricultureInnovation', 'ProblemStatement', 'EventConducted', 'Partnership', 'Startup')),
+				'conditions' => array('phase' => $phase, 'type IN' => array('AgricultureInnovation', 'ProblemStatement', 'EventConducted', 'Partnership', 'Startup')),
 				'fields' => array('SUM(count) AS sum', 'year', 'month', 'type'),
 				'group' => array('type', 'year', 'month')
 			));
@@ -1564,7 +1566,7 @@ class DashboardController extends AppController
 
 	public function miRoboticsDashboard($type = null, $year = null, $month = null)
 	{
-		$phase=$this->Session->read('Phase');
+		$phase = $this->Session->read('Phase');
 		if ($type != '' && $year != '' && $month != '') {
 			// print_r($type);
 			$this->layout = 'ajax';
@@ -1577,7 +1579,7 @@ class DashboardController extends AppController
 			else if ($type == 'Patent') $model = 'MiPatent';
 
 			$list = $this->$model->find('all', array(
-				'conditions' => array('phase'=>$phase,'year' => $year, 'month' => $month),
+				'conditions' => array('phase' => $phase, 'year' => $year, 'month' => $month),
 				'order' => array('id DESC')
 			));
 			//print_r($list);
@@ -1593,7 +1595,7 @@ class DashboardController extends AppController
 			$years = array_reverse($this->getYear());
 			$month = $this->getMonth();
 			$targets = $this->Targets->find('all', array(
-				'conditions' => array('phase'=>$phase),
+				'conditions' => array('phase' => $phase),
 				'fields' => array('SUM(count) AS sum', 'year', 'month', 'type'),
 				'group' => array('type', 'year', 'month')
 			));
@@ -1651,7 +1653,7 @@ class DashboardController extends AppController
 
 			/*------------------------------- MiPrograms --------------------------------*/
 			$MiPrograms_list = $this->MiPrograms->find('all', array(
-				'conditions' => array('phase'=>$phase),
+				'conditions' => array('phase' => $phase),
 				'fields' => array('COUNT(*) AS count', 'year', 'month'),
 				'group' => array('year', 'month')
 			));
@@ -1669,7 +1671,7 @@ class DashboardController extends AppController
 
 			/*------------------------------- MiInternationalConferences --------------------------------*/
 			$MiIc_list = $this->MiInternationalConferences->find('all', array(
-				'conditions' => array('phase'=>$phase),
+				'conditions' => array('phase' => $phase),
 				'fields' => array('COUNT(*) AS count', 'year', 'month'),
 				'group' => array('year', 'month')
 			));
@@ -1686,7 +1688,7 @@ class DashboardController extends AppController
 			}
 			/*------------------------------- MiStartupConferences --------------------------------*/
 			$MiStartUp_list = $this->MiStartupConferences->find('all', array(
-				'conditions' => array('phase'=>$phase),
+				'conditions' => array('phase' => $phase),
 				'fields' => array('COUNT(*) AS count', 'year', 'month'),
 				'group' => array('year', 'month')
 			));
@@ -1704,7 +1706,7 @@ class DashboardController extends AppController
 
 			/*------------------------------- MiOfficials  --------------------------------*/
 			$MiOfficials_list = $this->MiOfficials->find('all', array(
-				'conditions' => array('phase'=>$phase),
+				'conditions' => array('phase' => $phase),
 				'fields' => array('COUNT(*) AS count', 'year', 'month'),
 				'group' => array('year', 'month')
 			));
@@ -1722,7 +1724,7 @@ class DashboardController extends AppController
 
 			/*------------------------------- MiStudentEnrollment  --------------------------------*/
 			$MiStudentEnrollment_list = $this->MiStudentEnrollment->find('all', array(
-				'conditions' => array('phase'=>$phase),
+				'conditions' => array('phase' => $phase),
 				'fields' => array('COUNT(*) AS count', 'year', 'month'),
 				'group' => array('year', 'month')
 			));
@@ -1740,7 +1742,7 @@ class DashboardController extends AppController
 
 			/*------------------------------- MiStudentEnrollment  --------------------------------*/
 			$MiPatent_list = $this->MiPatent->find('all', array(
-				'conditions' => array('phase'=>$phase),
+				'conditions' => array('phase' => $phase),
 				'fields' => array('COUNT(*) AS count', 'year', 'month'),
 				'group' => array('year', 'month')
 			));
@@ -1776,7 +1778,7 @@ class DashboardController extends AppController
 		$this->loadModel('IotAcademiaConnected');
 		$this->loadModel('IotDelegation');
 		$this->loadModel('IotPilotsProject');
-		$phase=$this->Session->read('Phase');
+		$phase = $this->Session->read('Phase');
 		if ($type != '' && $year != '' && $month != '') {
 			// print_r($type);
 			$this->layout = 'ajax';
@@ -1793,7 +1795,7 @@ class DashboardController extends AppController
 			if ($type != 'IotStartUp' && $type != 'IotEventWorkshop' && $type != 'IotIndustryConnected' && $type != 'IotDelegation' && $type != 'IotAcademiaConnected')
 				$this->$model->bindModel(array('belongsTo' => array("IotStartUp")));
 			$list = $this->$model->find('all', array(
-				'conditions' => array('phase'=>$phase,  '`' . $model . '`.year' => $year, '`' . $model . '`.month' => $month),
+				'conditions' => array('phase' => $phase,  '`' . $model . '`.year' => $year, '`' . $model . '`.month' => $month),
 				'order' => array('`' . $model . '`.id DESC')
 			));
 
@@ -1810,7 +1812,7 @@ class DashboardController extends AppController
 			$years = array_reverse($this->getYear());
 			$month = $this->getMonth();
 			$targets = $this->Targets->find('all', array(
-				'conditions' => array('phase'=>$phase),
+				'conditions' => array('phase' => $phase),
 				'fields' => array('SUM(count) AS sum', 'year', 'month', 'type'),
 				'group' => array('type', 'year', 'month')
 			));
@@ -1881,7 +1883,7 @@ class DashboardController extends AppController
 			//pr($iot_array);
 			/*------------------------------- IotStartUp --------------------------------*/
 			$IotStartUp_list = $this->IotStartUp->find('all', array(
-				'conditions' => array('phase'=>$phase),
+				'conditions' => array('phase' => $phase),
 				'fields' => array('COUNT(*) AS count', 'year', 'month'),
 				'group' => array('year', 'month')
 			));
@@ -1899,8 +1901,8 @@ class DashboardController extends AppController
 			/*------------------------------- GeneratedEmployment --------------------------------*/
 			$this->GeneratedEmployment->bindModel(array('belongsTo' => array("IotStartUp")));
 			$GeneratedEmployment_list = $this->GeneratedEmployment->find('all', array(
-				'conditions' => array('IotStartUp.phase'=>$phase),
-				'fields' => array('SUM(mobile_no) AS count', 'year', 'month'),
+				'conditions' => array('IotStartUp.phase' => $phase),
+				'fields' => array('COUNT(*) AS count', 'year', 'month'),
 				'group' => array('year', 'month')
 			));
 			foreach ($GeneratedEmployment_list as $item) {
@@ -1916,7 +1918,7 @@ class DashboardController extends AppController
 
 			/*------------------------------- IotIntellectualProperty --------------------------------*/
 			$IotIntellectualProperty_list = $this->IotIntellectualProperty->find('all', array(
-				'conditions' => array('phase'=>$phase),
+				'conditions' => array('phase' => $phase),
 				'fields' => array('COUNT(*) AS count', 'year', 'month'),
 				'group' => array('year', 'month')
 			));
@@ -1934,7 +1936,7 @@ class DashboardController extends AppController
 			/*------------------------------- IotStartupsRisedFund --------------------------------*/
 			$this->IotStartupsRisedFund->bindModel(array('belongsTo' => array("IotStartUp")));
 			$IotStartupsRisedFund_list = $this->IotStartupsRisedFund->find('all', array(
-				'conditions' => array('IotStartUp.phase'=>$phase),
+				'conditions' => array('IotStartUp.phase' => $phase),
 				'fields' => array('COUNT(*) AS count', 'year', 'month'),
 				'group' => array('year', 'month')
 			));
@@ -1951,7 +1953,7 @@ class DashboardController extends AppController
 
 			/*------------------------------- IotEventWorkshop --------------------------------*/
 			$IotEventWorkshop_list = $this->IotEventWorkshop->find('all', array(
-				'conditions' => array('phase'=>$phase),
+				'conditions' => array('phase' => $phase),
 				'fields' => array('COUNT(*) AS count', 'year', 'month'),
 				'group' => array('year', 'month')
 			));
@@ -1968,7 +1970,7 @@ class DashboardController extends AppController
 
 			/*------------------------------- IotIndustryConnected  --------------------------------*/
 			$IotIndustryConnected_list = $this->IotIndustryConnected->find('all', array(
-				'conditions' => array('phase'=>$phase),
+				'conditions' => array('phase' => $phase),
 				'fields' => array('COUNT(*) AS count', 'year', 'month'),
 				'group' => array('year', 'month')
 			));
@@ -1985,7 +1987,7 @@ class DashboardController extends AppController
 
 			/*------------------------------- IotAcademiaConnected  --------------------------------*/
 			$IotAcademiaConnected_list = $this->IotAcademiaConnected->find('all', array(
-				'conditions' => array('phase'=>$phase),
+				'conditions' => array('phase' => $phase),
 				'fields' => array('COUNT(*) AS count', 'year', 'month'),
 				'group' => array('year', 'month')
 			));
@@ -2003,7 +2005,7 @@ class DashboardController extends AppController
 			/*------------------------------- IotDelegation  --------------------------------*/
 
 			$IotDelegation_list = $this->IotDelegation->find('all', array(
-				'conditions' => array('phase'=>$phase),
+				'conditions' => array('phase' => $phase),
 				'fields' => array('COUNT(*) AS count', 'year', 'month'),
 				'group' => array('year', 'month')
 			));
@@ -2021,7 +2023,7 @@ class DashboardController extends AppController
 			/*------------------------------- IotPilotsProject  --------------------------------*/
 			$this->IotPilotsProject->bindModel(array('belongsTo' => array("IotStartUp")));
 			$IotPilotsProject_list = $this->IotStartUp->find('all', array(
-				'conditions' => array('phase'=>$phase),
+				'conditions' => array('phase' => $phase),
 				'fields' => array('COUNT(*) AS count', 'year', 'month'),
 				'group' => array('year', 'month')
 			));

@@ -1,9 +1,9 @@
 <div class="box ">
     <div class=" box-header with-border">
-        <h4 class="box-title text-info">Societal Solutions</h4>
+        <h4 class="box-title text-info">Enterprise Solutions</h4>
     </div>
     <div class="box-body">
-        <div id="societal_solutions" style="height: 400px;"></div>
+        <div id="enterprise_solutions" style="height: 400px;"></div>
     </div>
 </div>
 
@@ -14,20 +14,20 @@
     $(function () {
         var colors1 = [ '#063a98','#a96705'];
 
-        var social_array=<?= json_encode($social_array) ?>;
+        var enterprise_array=<?= json_encode($social_array) ?>;
 
 
-        socialDrillDown = [];
+        enterpriseDrillDown = [];
 
-        $.each(social_array,function(index, value){
-            $.each(social_array[index],function(index1, value1){
+        $.each(enterprise_array,function(index, value){
+            $.each(enterprise_array[index],function(index1, value1){
 
                 year=[];
-                $.each(social_array[index]['Target']['Year'],function(index2, value2){
+                $.each(enterprise_array[index]['Target']['Year'],function(index2, value2){
                     year.push(
                         [index2, value2, index+'-'+index2+'-Target']
                     );
-                    socialDrillDown.push({
+                    enterpriseDrillDown.push({
                         id: index+'-YearWise-Target',
                         name: index+'-YearWise-Target',
                         data: year,
@@ -35,9 +35,9 @@
                     });
 
                     month=[]
-                    // $.each(social_array[index]['Target'][index2],function(index5, value5){
+                    // $.each(enterprise_array[index]['Target'][index2],function(index5, value5){
                     //     month.push([index5, parseInt(value5), index]);
-                    //     socialDrillDown.push({
+                    //     enterpriseDrillDown.push({
                     //         id: index+'-'+index2+'-Target',
                     //         name: index+'-'+index2+'-Target',
                     //         data: month,
@@ -47,11 +47,11 @@
                 });
 
                 achieveYear=[];
-                $.each(social_array[index]['Achieve']['Year'],function(index2, value2){
+                $.each(enterprise_array[index]['Achieve']['Year'],function(index2, value2){
                     achieveYear.push(
                         [index2, value2, index+'-'+index2+'-Achieved']
                     );
-                    socialDrillDown.push( {
+                    enterpriseDrillDown.push( {
                         id: index+'-YearWise-Achieved',
                         name: index+'-YearWise-Achieved',
                         data: achieveYear,
@@ -59,9 +59,9 @@
                     });
 
                     month=[]
-                    $.each(social_array[index]['Achieve'][index2],function(index5, value5){
+                    $.each(enterprise_array[index]['Achieve'][index2],function(index5, value5){
                         month.push([index5, parseInt(value5), index,index2]);
-                        socialDrillDown.push({
+                        enterpriseDrillDown.push({
                             id: index+'-'+index2+'-Achieved',
                             name: index+'-'+index2+'-Achieved',
                             data: month,
@@ -75,7 +75,7 @@
 
 
 
-        Highcharts.chart('societal_solutions', {
+        Highcharts.chart('enterprise_solutions', {
             chart: {
                 type: 'column',
                 options3d: {
@@ -97,7 +97,7 @@
             },
             yAxis: {
                 title: {
-                    text: 'No of Solutions Supported/Dept Liasoning'
+                    text: 'No of Enterprise Solutions Adopted'
                 }
             },
             plotOptions: {
@@ -121,23 +121,21 @@
             series: [{
                 name: 'Target',
                 data: [
-                    ['Solutions Supported',social_array['SolutionSupport']['Target']['count'],'SolutionSupport-YearWise-Target',colors1[0]],
-                    ['Dept Liasoning',social_array['DeptLicense']['Target']['count'],'DeptLicense-YearWise-Target',colors1[0]],
-                   ],
+                    ['Enterprise Solutions Adopted',enterprise_array['EnterpriseSolutionsAdopted']['Target']['count'],'EnterpriseSolutionsAdopted-YearWise-Target',colors1[0]],
+                ],
                 keys: ['name', 'y', 'drilldown','color'],
                 color:colors1[0]
             }, {
                 name: 'Achieved',
                 data: [
-                    ['Solutions Supported',social_array['SolutionSupport']['Achieve']['count'],'SolutionSupport-YearWise-Achieved',colors1[1]],
-                    ['Dept Liasoning',social_array['DeptLicense']['Achieve']['count'],'DeptLicense-YearWise-Achieved',colors1[1]],
-                 ],
+                    ['Enterprise Solutions Adopted',enterprise_array['EnterpriseSolutionsAdopted']['Achieve']['count'],'EnterpriseSolutionsAdopted-YearWise-Achieved',colors1[1]],
+                ],
                 keys: ['name', 'y', 'drilldown','color'],
                 color:colors1[1]
             }],
             drilldown: {
                 allowPointDrilldown: false,
-                series:socialDrillDown
+                series:enterpriseDrillDown
             }
         });
 

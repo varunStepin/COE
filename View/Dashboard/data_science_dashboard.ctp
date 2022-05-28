@@ -21,6 +21,9 @@
             <div class="col-6">
                 <?php echo $this->element('Admin/Dashboard/societal_solutions');?>
             </div>
+			<div class="col-6">
+                <?php echo $this->element('Admin/Dashboard/enterprise_solutions');?>
+            </div>
             <div class="col-6">
                 <?php echo $this->element('Admin/Dashboard/data_science_ai'); ?>
             </div>

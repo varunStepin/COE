@@ -97,6 +97,34 @@
                     </tbody>
                 </table>
             <?php }
+			else if($type=='ExitedCompany' || $type=='SuccessfulCompany'){?>
+                <table class="table table-striped example_long table-bordered table-hover" >
+                    <thead class="bg-primary-gradient text-white">
+                    <tr>
+                        <th>Sl no.</th>
+                        <th>Company Name</th>
+                         <th>Company Type</th>
+                        <th>Product</th>
+						<th>Email</th>
+                        <th>Mobile No</th>
+
+
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <?php foreach($list as $key=>$list){?>
+                        <tr>
+                            <td><?= ++$key ?></td>
+                            <td><?= $list[$type]['name'] ?></td>
+                            <td><?= $list[$type]['company_type'] ?></td>
+                            <td><?= $list[$type]['product'] ?></td>
+                            <td><?= $list[$type]['email'] ?></td>
+                            <td><?= $list[$type]['mobile'] ?></td>
+                        </tr>
+                    <?php }?>
+                    </tbody>
+                </table>
+            <?php }
             ?>
         </div>
     </div>

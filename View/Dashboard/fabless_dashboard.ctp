@@ -137,6 +137,8 @@
                     ['Companies',final_array['Companies']['Target']['count'],'Companies-YearWise-Target',colors1[0]],
                     ['Partners',final_array['Partners']['Target']['count'],'Partners-YearWise-Target',colors1[0]],
                     ['Cohort',final_array['Cohort']['Target']['count'],'Cohort-YearWise-Target',colors1[0]],
+                 ['SuccessfulCompany',final_array['SuccessfulCompany']['Target']['count'],'SuccessfulCompany-YearWise-Target',colors1[0]],
+              ['ExitedCompany',final_array['ExitedCompany']['Target']['count'],'ExitedCompany-YearWise-Target',colors1[0]],
                 ],
                 keys: ['name', 'y', 'drilldown','color'],
                 color:colors1[0]
@@ -146,6 +148,8 @@
                     ['Companies',final_array['Companies']['Achieve']['count'],'Companies-YearWise-Achieved',colors1[1]],
                     ['Partners',final_array['Partners']['Achieve']['count'],'Partners-YearWise-Achieved',colors1[1]],
                     ['Cohort',final_array['Cohort']['Achieve']['count'],'Cohort-YearWise-Achieved',colors1[1]],
+                 ['SuccessfulCompany',final_array['SuccessfulCompany']['Achieve']['count'],'SuccessfulCompany-YearWise-Achieved',colors1[1]],
+               ['ExitedCompany',final_array['ExitedCompany']['Achieve']['count'],'ExitedCompany-YearWise-Achieved',colors1[1]],
                 ],
                 keys: ['name', 'y', 'drilldown','color'],
                 color:colors1[1]
