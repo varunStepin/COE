@@ -336,6 +336,93 @@ class AerospaceDefenceController extends AppController {
 
         }
     }
+public function starterCourses(){
+        $list_array = array();
+        $this->loadModel('StarterCourse');
+        $details = $this->StarterCourse->find('all',array("order"=>"StarterCourse.starter_program_name ASC"));
 
+        foreach($details as $list) {
+            $list_array[$list['StarterCourse']['id']] = $list['StarterCourse']['starter_program_name'];
+        }
+        $this->set('course',$list_array);
+    }
+
+    public function starterCourse($id=null){
+
+        $this->layout = 'fab_layout';
+        $this->_userSessionCheckout();
+        $this->getYear();
+        $this->getMonth();
+        $this->loadModel('StarterCourseStudent');
+        $branch = array('MCA'=>'MCA','BCA'=>'BCA');
+        $this->set('branch',$branch);
+        $this->starterCourses();
+        if($this->request->data['StarterCourseStudent']['type']=="insert")
+        {
+            
+            $student_name = $this->request->data['attendee_name'];
+            for($i=0;$i<count($student_name);$i++)
+            {
+                $data = array(
+                    "StarterCourseStudent"=>array(
+                        "starter_course_id"=>$this->request->data['StarterCourseStudent']['starter_course_id'],
+                        "attendee_name"=>$this->request->data['attendee_name'][$i],
+                        "gender"=>$this->request->data['gender'][$i],
+                        "institute_name"=>$this->request->data['institute_name'][$i],
+                        "email_id"=>$this->request->data['email_id'][$i],
+                        "city"=>$this->request->data['city'][$i],
+                        "contact_number"=>$this->request->data['contact_number'][$i],
+                    )
+                );
+               
+                $this->StarterCourseStudent->saveAll($data);
+            }
+            $message=" Student Added Successfully";
+
+            $this->Session->setFlash("<div id='php-alert' class='alert alert-dismissible alert-success'><span class='glyphicon glyphicon-remove-circle'></span><button type='button' class='close' data-dismiss='alert' aria-label='Close'><span aria-hidden='true' style='color:black;'>&times;</span></button>".$message.".</div>");
+            $this -> redirect(array('action' => 'starterCourseList'));
+        }
+
+
+        elseif($this->request->data['StarterCourseStudent']['csrf_token']!=""){
+            if ($this->request->data['StarterCourseStudent']['csrf_token'] != $this->Session->read('CSRFTOKEN')) {
+                $this->Session->setFlash("<div id='php-alert' class='alert alert-dismissible alert-danger'><span class='glyphicon glyphicon-remove-circle'></span><button type='button' class='close' data-dismiss='alert' aria-label='Close'><span aria-hidden='true' style='color:black;'>&times;</span></button> Unauthorized access. Please try again.</div>");
+                $this -> redirect(array('action' => 'programStudent'));
+
+            }
+        }
+        $this->changeCSRFToken();
+    }
+
+    public function starterCourseList($id=null){
+
+        $this->layout = 'fab_layout';
+        $this->_userSessionCheckout();
+        $this->getYear();
+        $this->getMonth();
+        $this->loadModel('StarterCourseStudent');
+
+        if($this->request->data['StarterCourseStudent']['type']=="delete"){
+            $this->request->data['StarterCourseStudent']['is_delete'] = 1 ;
+            $data = $this->request->data['StarterCourseStudent'];
+            if($this->StarterCourseStudent->save($data)){
+                $this->Session->setFlash("<div id='php-alert' class='alert alert-dismissible alert-danger'><span class='glyphicon glyphicon-remove-circle'></span><button type='button' class='close' data-dismiss='alert' aria-label='Close'><span aria-hidden='true' style='color:black;'>&times;</span></button> Data has been deleted Successfully.</div>");
+
+                $this -> redirect(array('action' => 'starterCourseList'));
+            }
+            else{
+                $this->Session->setFlash("<div id='php-alert' class='alert alert-dismissible alert-danger'><span class='glyphicon glyphicon-remove-circle'></span><button type='button' class='close' data-dismiss='alert' aria-label='Close'><span aria-hidden='true' style='color:black;'>&times;</span></button>Failed to delete.Please try again.</div>");
+
+                $this -> redirect(array('action' => 'starterCourseList'));
+            }
+        }
+        else{
+            $this->StarterCourseStudent->bindModel(array('belongsTo'=>array("StarterCourse")));
+            $student_list = $this->StarterCourseStudent->find('all',array('conditions'=>array('StarterCourseStudent.is_delete'=>0),
+                'order'=>array('StarterCourseStudent.id DESC')));
+            $this->set('manage_list',$student_list);
+
+        }
+    }
 
 }

@@ -142,15 +142,18 @@ class AdminController extends AppController
         $this->set('year_list',$dataList);
         $this->changeCSRFToken();
     }
-     public function expenseDetailsPopUp($type=null,$month=null){
+     public function expenseDetailsPopUp($type = null, $month = null)
+    {
         $this->loadModel('Expenditure');
-		$phase=$this->Session->read('Phase');
-        $this->Expenditure->bindModel(array("belongsTo"=>array("FinancialYear")));
-        $expense=$this->Expenditure->find('all',array('conditions'=>array('phase'=>$phase,"types"=>$type,'FinancialYear.current'=>1,'month(date)'=>date('m',strtotime($month)))));
-        //print_r($expense);
+        $phase = $this->Session->read('Phase');
+        $expenseYear = $this->Session->read('TBIYear');
+        $months = date('m', strtotime('2021-'.$month.'-21'));
 
-        $this->set('expenseDetails',$expense);
-        $this->set('header',$type);
+        $this->Expenditure->bindModel(array("belongsTo" => array("FinancialYear")));
+        $expense = $this->Expenditure->find('all', array('conditions' => array('phase' => $phase, 'types' => $type, 'FinancialYear.id' => $expenseYear, 'month(date)' => $months)));
+     
+        $this->set('expenseDetails', $expense);
+        $this->set('header', $type);
     }
 
     /*--------------------------By Pavan Kumar M(28/10/2020)--------------------------*/
@@ -190,7 +193,7 @@ class AdminController extends AppController
         /*--------------------------------expense-----------------------------------------------------*/
           $result=$this->Financials->query("SELECT DATE_FORMAT(`date`,'%M') as month, sum(amount_spent) total,types FROM `expenditures`
                                          INNER JOIN financial_years ON financial_years.id=financial_year_id
-                                            where expenditures.phase='".$phase."' AND expenditures.financial_year_id=$financial_year_id GROUP BY types, DATE_FORMAT(`date`,'%Y-%m')");
+                                            where expenditures.phase='".$phase."' AND expenditures.financial_year_id=$financial_year_id GROUP BY types, expenditures.financial_year_id,DATE_FORMAT(`date`,'%m')");
         $expense=[];
 
         foreach ($result as $list){
@@ -223,17 +226,40 @@ class AdminController extends AppController
     }
 
     /*-------------------By Varun SIT (25/11/2021)-------------------*/
-    public function tbiDashboard()
+       public function tbiDashboard()
     {
         $this->layout = 'fab_layout';
-        $phase = $this->Session->read('Phase');
         $this->_userSessionCheckout();
+        $this->loadModel('Financials');
+        $this->loadModel('FinancialYear');
+       
+        $phase = $this->Session->read('Phase');
+      
+        $expenseYear = $this->Session->read('TBIYear');
+      
+        $this->set('expenseYear', $expenseYear);
+
+        Configure::write('debug', 1);
         if ($this->Session->read('ApplicationType') == 'COE') {
             return  $this->redirect(array('action' => 'dashboard'));
         }
         $this->loadModel('TbiStartup');
-        
-        $manage_list = $this->TbiStartup->query("SELECT phase,university,is_selected,is_incubated,is_innovations_commercialized,is_incubated_off_tbi,is_graduated, count(*) as counts FROM `tbi_startups` WHERE deleted IS NULL AND tbi_startups.phase='".$phase."' GROUP BY  university,is_selected,is_incubated,is_innovations_commercialized,is_incubated_off_tbi,is_graduated ORDER BY `tbi_startups`.`university` ASC");
+
+        $this->_getFundingYear();
+
+        $this->Financials->bindModel(array("belongsTo" => array("FinancialYear")));
+        $CeNSE = $this->Financials->find('first', array('conditions' => array('phase' => $phase, 'types' => 'CeNSE', 'Financials.financial_year_id' => $expenseYear)));
+        $this->Financials->bindModel(array("belongsTo" => array("FinancialYear")));
+        $CPDM = $this->Financials->find('first', array('conditions' => array('phase' => $phase, 'types' => 'CPDM', 'Financials.financial_year_id' => $expenseYear)));
+        $this->Financials->bindModel(array("belongsTo" => array("FinancialYear")));
+        $ManipalUniversity = $this->Financials->find('first', array('conditions' => array('phase' => $phase, 'types' => 'Manipal University', 'Financials.financial_year_id' => $expenseYear)));
+        $this->Financials->bindModel(array("belongsTo" => array("FinancialYear")));
+        $RamaiahUniversity = $this->Financials->find('first', array('conditions' => array('phase' => $phase, 'types' => 'Ramaiah University', 'Financials.financial_year_id' => $expenseYear)));
+        $this->Financials->bindModel(array("belongsTo" => array("FinancialYear")));
+        $this->set(compact('CeNSE', $CeNSE, 'CPDM', $CPDM, 'ManipalUniversity', $ManipalUniversity, 'RamaiahUniversity', $RamaiahUniversity));
+
+
+        $manage_list = $this->TbiStartup->query("SELECT phase,university,is_selected,is_incubated,is_innovations_commercialized,is_incubated_off_tbi,is_graduated, count(*) as counts FROM `tbi_startups` WHERE deleted IS NULL AND tbi_startups.phase='" . $phase . "' GROUP BY  university,is_selected,is_incubated,is_innovations_commercialized,is_incubated_off_tbi,is_graduated ORDER BY `tbi_startups`.`university` ASC");
         $finalArray = [];
         $finalArray["NSTBI"]['title'] = "Centre for Nano Science and Engineering (CeNSE), IISc., Bengaluru";
         $finalArray["DMTBI"]['title'] = "Centre for Product Design and Manufacturing (CPDM), IISc., Bengaluru";
@@ -249,17 +275,16 @@ class AdminController extends AppController
             if ($data['is_innovations_commercialized']) $innovations = $count;
             if ($data['is_incubated_off_tbi']) $tbi = $count;
             if ($data['is_graduated']) $graduated = $count;
-            // if ($data['is_event_conducted']) $event_conducted = $count;
+
 
             $finalArray[$data['university']]['selected'] += $selected;
             $finalArray[$data['university']]['incubated'] += $incubated;
             $finalArray[$data['university']]['innovations'] += $innovations;
             $finalArray[$data['university']]['tbi'] += $tbi;
             $finalArray[$data['university']]['graduated'] += $graduated;
-            // $finalArray[$data['university']]['event_conducted'] += $event_conducted;
         }
         $this->loadModel('TbiEvent');
-        $manage_events = $this->TbiEvent->query("SELECT university, count(*) as counts FROM `tbi_events` WHERE tbi_events.phase='".$phase."'  GROUP BY `university` ORDER BY `tbi_events`.`university` ASC");
+        $manage_events = $this->TbiEvent->query("SELECT university, count(*) as counts FROM `tbi_events` WHERE tbi_events.phase='" . $phase . "'  GROUP BY `university` ORDER BY `tbi_events`.`university` ASC");
 
         foreach ($manage_events as $list) {
             $data = $list['tbi_events'];
@@ -267,8 +292,20 @@ class AdminController extends AppController
 
             $finalArray[$data['university']]['event_conducted'] += $count;
         }
+        /*--------------------------------expense-----------------------------------------------------*/
+        $result = $this->Financials->query("SELECT DATE_FORMAT(`date`,'%M') as month, sum(amount_spent) total,types FROM `expenditures`
+                         INNER JOIN financial_years ON financial_years.id=financial_year_id
+                            where expenditures.phase='" . $phase . "' AND expenditures.financial_year_id='" . $expenseYear . "' GROUP BY types, DATE_FORMAT(`date`,'%Y-%m')");
+        $expense = [];
 
-        //print_r($finalArray);
+        foreach ($result as $list) {
+            $expense[$list['expenditures']['types']]['total'] += $list[0]['total'];
+            $expense[$list['expenditures']['types']][$list[0]['month']] += $list[0]['total'];
+        }
+        $this->set('expenseDetails', $expense);
+        $current_financial_year = $this->FinancialYear->find('first', array('conditions' => array('FinancialYear.current' => 1)));
+        $this->set('current_financial_year', $current_financial_year['FinancialYear']['year']);
+
         $this->set('finalArray', json_encode($finalArray));
     }
 	public function tbiDashboardPopup($university, $type)
@@ -292,12 +329,13 @@ class AdminController extends AppController
         }
         $this->set('manage_list', $manage_list);
         $this->set('type', $type);
+        $this->set('university',$university);
     }
 
-    public function cifDashboard($year = null)
+   public function cifDashboard($year = null)
     {
         $this->loadModel('CifRoundtable');
-        $this->loadModel('CidRoundTableParticipant');
+        $this->loadModel('CifRoundTableParticipant');
         $this->loadModel('CifHackathon');
         $this->loadModel('CifPublicityMention');
         $this->loadModel('CifStartup');
@@ -311,13 +349,15 @@ class AdminController extends AppController
         $this->loadModel('CifTarget');
         $this->layout = 'fab_layout';
         $phase = $this->Session->read('Phase');
+        $centre = $this->Session->read('Centre');
+       
 
         $year = $year != '' ? $year : date('Y');
         $graphCounts = [];
 
         /**================== Events Graph Query ====================================== */
         $graphCounts['Events'] = $this->CifRoundtable->find('all', array(
-            'conditions' => array('year' => $year, 'phase' => $phase),
+            'conditions' => array('year' => $year, 'phase' => $phase, 'centre' => $centre),
             'fields' => array(
                 'SUM(CASE WHEN event_type = "Conference" THEN 1 ELSE 0 END) as Conference',
                 'SUM(CASE WHEN event_type = "Round Table" THEN 1 ELSE 0 END) as RoundTable',
@@ -326,7 +366,7 @@ class AdminController extends AppController
             )
         ))[0][0];
         $graphCounts['EventsTarget'] = $this->CifTarget->find('all', array(
-            'conditions' => array('year' => $year, 'phase' => $phase),
+            'conditions' => array('year' => $year, 'phase' => $phase, 'centre' => $centre),
             'fields' => array('count', 'type'),
             'group' => 'type'
         ));
@@ -339,7 +379,7 @@ class AdminController extends AppController
         }
         /**================== Publicity Mentions Graph Query ====================================== */
         $graphCounts['PublicityMentions'] = $this->CifPublicityMention->find('all', array(
-            'conditions' => array('year' => $year, 'phase' => $phase),
+            'conditions' => array('year' => $year, 'phase' => $phase, 'centre' => $centre),
             'fields' => array(
                 'SUM(CASE WHEN media_type = "Online Platform" THEN 1 ELSE 0 END) as OnlinePlatform',
                 'SUM(CASE WHEN media_type = "News Paper" THEN 1 ELSE 0 END) as NewsPaper',
@@ -348,7 +388,7 @@ class AdminController extends AppController
         ))[0][0];
 
         $graphCounts['PublicityMentionsTarget'] = $this->CifTarget->find('all', array(
-            'conditions' => array('year' => $year, 'phase' => $phase),
+            'conditions' => array('year' => $year, 'phase' => $phase, 'centre' => $centre),
             'fields' => array('count', 'type'),
             'group' => 'type'
         ));
@@ -361,11 +401,11 @@ class AdminController extends AppController
         }
         /**==================Startups Enrolled Graph Query ====================================== */
         $graphCounts['Startup'] = $this->CifStartup->find('all', array(
-            'conditions' => array('year' => $year, 'phase' => $phase),
+            'conditions' => array('year' => $year, 'phase' => $phase, 'centre' => $centre),
             'fields' => array('COUNT(*) AS count')
         ))[0][0];
         $graphCounts['StartupsTarget'] = $this->CifTarget->find('all', array(
-            'conditions' => array('year' => $year, 'type' => 'Startups', 'phase' => $phase),
+            'conditions' => array('year' => $year, 'type' => 'Startups', 'phase' => $phase, 'centre' => $centre),
             'fields' => array('count', 'type'),
         ));
         $graphCounts['StartupsTarget']['count'] = $graphCounts['StartupsTarget'][0]['CifTarget']['count'];
@@ -373,7 +413,7 @@ class AdminController extends AppController
         /**==================Startups Raised Fund Graph Query ====================================== */
         $this->CifStartupRisedFund->bindModel(array('belongsTo' => array('CifStartup')));
         $fundsRaised = $this->CifStartupRisedFund->find('all', array(
-            'conditions' => array('CifStartupRisedFund.year' => $year, 'CifStartup.phase' => $phase),
+            'conditions' => array('CifStartupRisedFund.year' => $year, 'CifStartup.phase' => $phase, 'CifStartup.centre' => $centre),
             'fields' => array('SUM(amount) AS amount', 'CifStartup.startup_name', 'CifStartup.id'),
             'group' => 'cif_startup_id'
         ));
@@ -388,7 +428,7 @@ class AdminController extends AppController
         $graphCounts['StartupRaisedFund'] = $fundSArr;
 
         $graphCounts['StartupsTargetToRaiseFund'] = $this->CifTarget->find('all', array(
-            'conditions' => array('year' => $year, 'type' => 'Fund Raised by Startup', 'phase' => $phase),
+            'conditions' => array('year' => $year, 'type' => 'Fund Raised by Startup', 'phase' => $phase, 'centre' => $centre),
             'fields' => array('count', 'type'),
         ));
         $graphCounts['StartupsTargetToRaiseFund']['count'] = $graphCounts['StartupsTargetToRaiseFund'][0]['CifTarget']['count'];
@@ -396,13 +436,13 @@ class AdminController extends AppController
 
         /**==================Gender Diversity Graph Query ====================================== */
         $graphCounts['GenderDiversityPrograms'] = $this->CifGenderDiversity->find('all', array(
-            'conditions' => array('CifGenderDiversity.year' => $year, 'CifGenderDiversity.phase' => $phase),
+            'conditions' => array('CifGenderDiversity.year' => $year, 'CifGenderDiversity.phase' => $phase, 'CifGenderDiversity.centre' => $centre),
             'fields' => array('percentage_woman_participants', 'event_name', 'id', 'phase'),
         ));
 
 
         $graphCounts['GenderDiversityTarget'] = $this->CifTarget->find('all', array(
-            'conditions' => array('year' => $year, 'type' => 'Gender Diversity', 'phase' => $phase),
+            'conditions' => array('year' => $year, 'type' => 'Gender Diversity', 'phase' => $phase, 'centre' => $centre),
             'fields' => array('count', 'type'),
         ));
         $graphCounts['GenderDiversityTarget']['count'] = $graphCounts['GenderDiversityTarget'][0]['CifTarget']['count'];
@@ -410,7 +450,7 @@ class AdminController extends AppController
 
         /**==================External Event Participant Graph Query ====================================== */
         $graphCounts['ExternalEventParticipant'] = $this->CifExternalEvent->find('all', array(
-            'conditions' => array('CifExternalEvent.year' => $year, 'CifExternalEvent.phase' => $phase),
+            'conditions' => array('CifExternalEvent.year' => $year, 'CifExternalEvent.phase' => $phase, 'CifExternalEvent.centre' => $centre),
             'joins' => array(
                 array(
                     'table' => 'cif_external_event_participants',
@@ -423,26 +463,26 @@ class AdminController extends AppController
             'group' => array('CifExternalEvent.id'),
         ));
         $graphCounts['ExternalEventParticipantTarget'] = $this->CifTarget->find('all', array(
-            'conditions' => array('year' => $year, 'type' => 'Participation in External Events', 'phase' => $phase),
+            'conditions' => array('year' => $year, 'type' => 'Participation in External Events', 'phase' => $phase, 'centre' => $centre),
             'fields' => array('count', 'type'),
         ));
         $graphCounts['ExternalEventParticipantTarget']['count'] = $graphCounts['ExternalEventParticipantTarget'][0]['CifTarget']['count'];
 
         /**==================Connects Graph Query ====================================== */
         $graphCounts['Connects']  = $this->CifConnect->find('all', array(
-            'conditions' => array('CifConnect.year' => $year, 'CifConnect.phase' => $phase),
+            'conditions' => array('CifConnect.year' => $year, 'CifConnect.phase' => $phase, 'CifConnect.centre' => $centre),
             'fields' => array('COUNT(id) AS count'),
         ))[0][0];
 
         $graphCounts['ConnectTarget'] = $this->CifTarget->find('all', array(
-            'conditions' => array('year' => $year, 'type' => 'Connects', 'phase' => $phase),
+            'conditions' => array('year' => $year, 'type' => 'Connects', 'phase' => $phase, 'centre' => $centre),
             'fields' => array('count', 'type'),
         ));
         $graphCounts['ConnectTarget']['count'] = $graphCounts['ConnectTarget'][0]['CifTarget']['count'];
 
         /**==================Customer Satisfaction Graph Query ====================================== */
         $customerSatisfactionDetails = $this->CifCustomerSatisfaction->find('all', array(
-            'conditions' => array('CifCustomerSatisfaction.year' => $year, 'phase' => $phase),
+            'conditions' => array('CifCustomerSatisfaction.year' => $year, 'phase' => $phase, 'centre' => $centre),
             'fields' => array('SUM(satisfaction_pecentage) AS satisfaction_pecentage', 'COUNT(id) AS count', 'feedback_date'),
             'group' => array('feedback_date')
         ));
@@ -455,7 +495,7 @@ class AdminController extends AppController
         }
         $graphCounts['CustomerSatisfaction'] = $customerSatisfactionDetailsArr;
         $graphCounts['CustomerSatisfactionTarget'] = $this->CifTarget->find('all', array(
-            'conditions' => array('year' => $year, 'type' => 'Customer Satisfaction', 'phase' => $phase),
+            'conditions' => array('year' => $year, 'type' => 'Customer Satisfaction', 'phase' => $phase, 'centre' => $centre),
             'fields' => array('count', 'type'),
         ));
         $graphCounts['CustomerSatisfactionTarget']['count'] = $graphCounts['CustomerSatisfactionTarget'][0]['CifTarget']['count'];
@@ -466,13 +506,15 @@ class AdminController extends AppController
 
         $this->loadModel('CifFund');
         $this->loadModel('CifExpenditures');
+        $this->loadModel('CifOrganization');
         $fyYear = $year;
         $fyYear = substr($year, -2);
 
         $fyYear = "20" . ($fyYear - 1) . "-" . $fyYear;
+        $centre = $this->Session->read('Centre');
 
         $this->CifFund->bindModel(array("belongsTo" => array("FinancialYear", "CifOrganization" => array("foreignKey" => 'types'))));
-        $funds = $this->CifFund->find('all', array('conditions' => array('FinancialYear.year Like' => $fyYear, 'CifFund.phase' => $phase), 'group' => array("types")));
+        $funds = $this->CifFund->find('all', array('conditions' => array('FinancialYear.year Like' => $fyYear, 'CifFund.phase' => $phase, 'CifOrganization.centre' => $centre), 'group' => array("types")));
         $category = [];
         $fundDetails = [];
         foreach ($funds as $key => $fund) {
@@ -493,7 +535,7 @@ class AdminController extends AppController
                 'CifOrganization.name',
                 'types'
             ),
-            'conditions' => array('FinancialYear.year Like' => $fyYear, 'CifOrganization.name !=' => '', 'CifExpenditures.phase Like' => $phase), 'order' => array('types DESC'), 'group' => array("types")
+            'conditions' => array('FinancialYear.year Like' => $fyYear, 'CifOrganization.name !=' => '', 'CifExpenditures.phase Like' => $phase, 'CifOrganization.centre' => $centre),  'group' => array("types")
         ));
 
         $category = [];
@@ -512,10 +554,10 @@ class AdminController extends AppController
                 'SUM(amount_spent) as amountSpent',
                 'CifOrganization.name',
                 'types', 'MONTH(date) as month'
-
             ),
             'conditions' => array('FinancialYear.year Like' => $fyYear, 'CifOrganization.name !=' => '', 'CifExpenditures.phase Like' => $phase), 'order' => array('types DESC'), 'group' => array("MONTH(date)", "types")
         ));
+
 
         $result = array();
         $months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
@@ -554,59 +596,59 @@ class AdminController extends AppController
         $this->loadModel('CifCustomerSatisfaction');
         $this->loadModel('CifTarget');
         $phase = $this->Session->read('Phase');
+        $centre = $this->Session->read('Centre');
 
         $this->layout = 'ajax';
         $queryString = $this->request->query;
 
         $year = $queryString['year'];
-        //print_r($year);
+
         if ($queryString['type'] == 'Events') {
             $list = $this->CifRoundtable->find('all', array(
-                'conditions' => array('year' => $year, 'event_type' => $queryString['category'], 'phase' => $phase),
+                'conditions' => array('year' => $year, 'event_type' => $queryString['category'], 'phase' => $phase, 'centre' => $centre),
                 'order' => array('id DESC')
             ));
         } else if ($queryString['type'] == 'Publicity Mentions') {
             $list = $this->CifPublicityMention->find('all', array(
-                'conditions' => array('year' => $year, 'media_type' => $queryString['category'], 'phase' => $phase),
+                'conditions' => array('year' => $year, 'media_type' => $queryString['category'], 'phase' => $phase, 'centre' => $centre),
                 'order' => array('id DESC')
             ));
         } else if ($queryString['type'] == 'Startups Enrolled') {
             $list = $this->CifStartup->find('all', array(
-                'conditions' => array('year' => $year, 'phase' => $phase),
+                'conditions' => array('year' => $year, 'phase' => $phase, 'centre' => $centre),
                 'order' => array('id DESC')
             ));
         } else if ($queryString['type'] == 'Fund Raised By Startup') {
             $this->CifStartupRisedFund->bindModel(array('belongsTo' => array("CifStartup")));
             $list =  $this->CifStartupRisedFund->find('all', array(
-                'conditions' => array('CifStartupRisedFund.year' => $year, 'cif_startup_id' => $queryString['id'], 'CifStartup.phase' => $phase),
+                'conditions' => array('CifStartupRisedFund.year' => $year, 'cif_startup_id' => $queryString['id'], 'CifStartup.phase' => $phase, 'CifStartup.centre' => $centre),
                 'order' => array('CifStartupRisedFund.id DESC')
             ));
         } else if ($queryString['type'] == 'Gender Diversity') {
             $this->CifGenderDiversityParticipant->bindModel(array('belongsTo' => array("CifGenderDiversity")));
             $list =  $this->CifGenderDiversityParticipant->find('all', array(
-                'conditions' => array('cif_gender_diversity_id' => $queryString['id'], 'gender' => 'Female', 'CifGenderDiversity.year' => $year, 'CifGenderDiversity.phase' => $phase),
+                'conditions' => array('cif_gender_diversity_id' => $queryString['id'], 'gender' => 'Female', 'CifGenderDiversity.year' => $year, 'CifGenderDiversity.phase' => $phase, 'CifGenderDiversity.centre' => $centre),
                 'order' => array('CifGenderDiversityParticipant.id DESC')
             ));
         } else if ($queryString['type'] == 'External Event Participants') {
             $this->CifExternalEventParticipant->bindModel(array('belongsTo' => array("CifExternalEvent")));
             $list = $this->CifExternalEventParticipant->find('all', array(
-                'conditions' => array('cif_external_event_id' => $queryString['id'], 'CifExternalEvent.year' => $year, 'CifExternalEvent.phase' => $phase),
+                'conditions' => array('cif_external_event_id' => $queryString['id'], 'CifExternalEvent.year' => $year, 'CifExternalEvent.phase' => $phase, 'CifExternalEvent.centre' => $centre),
                 'order' => array('CifExternalEventParticipant.id DESC')
             ));
         } else if ($queryString['type'] == 'Connects') {
             $list = $this->CifConnect->find('all', array(
-                'conditions' => array('year' => $year, 'phase' => $phase),
+                'conditions' => array('year' => $year, 'phase' => $phase, 'centre' => $centre),
                 'order' => array('id DESC')
             ));
         } else if ($queryString['type'] == 'Customer Satisfaction') {
             $list = $this->CifCustomerSatisfaction->find('all', array(
-                'conditions' => array('CifCustomerSatisfaction.year' => $year, 'feedback_date' => date('Y-m-d', strtotime($queryString['id'])), 'phase' => $phase)
+                'conditions' => array('CifCustomerSatisfaction.year' => $year, 'feedback_date' => date('Y-m-d', strtotime($queryString['id'])), 'phase' => $phase, 'centre' => $centre)
             ));
         }
         $this->set('table_list', $list);
         $this->set('queryString', $queryString);
     }
-
 
     public function viewParticipant(){
         $this->loadModel('CifRoundtable');
@@ -625,14 +667,14 @@ class AdminController extends AppController
         $this->set('table_list',$list);
         $this->set('queryString', $queryString);
     }
-    	public function  cifExpenseDetailsPopUp($year=null, $type = null, $month = null)
-	{
-		$this->loadModel('CifExpenditures');
-		$fyYear = substr($year, -2);
-		$fyYear = "20" . ($fyYear - 1) . "-" . $fyYear;
-		$this->CifExpenditures->bindModel(array("belongsTo" => array("FinancialYear")));
-		$expense = $this->CifExpenditures->find('all', array('conditions' => array("types" => $type, 'FinancialYear.year' => $fyYear, 'month(date)' => date('m', strtotime($month)))));
-		$this->set('expenseDetails', $expense);
-		$this->set('header', $type);
-	}
+    public function  cifExpenseDetailsPopUp($year = null, $type = null, $month = null)
+    {
+        $this->loadModel('CifExpenditures');
+        $fyYear = substr($year, -2);
+        $fyYear = "20" . ($fyYear - 1) . "-" . $fyYear;
+        $this->CifExpenditures->bindModel(array("belongsTo" => array("FinancialYear")));
+        $expense = $this->CifExpenditures->find('all', array('conditions' => array("types" => $type, 'FinancialYear.year' => $fyYear, 'month(date)' => date('m', strtotime($month)))));
+        $this->set('expenseDetails', $expense);
+        $this->set('header', $type);
+    }
 }

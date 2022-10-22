@@ -30,7 +30,7 @@
     $(function(){
        'use strict';
        $.fn.loadModalData=function(type,year,month){
-           $('#chartDetailModalContent').load('iotDashboard/'+type+'/'+year+'/'+month,function(){
+           $('#chartDetailModalContent').load('iotDashboard/'+ encodeURIComponent(type) +'/'+year+'/'+month,function(){
                $('#chartDetailModal').modal({show:true});
            });
        }

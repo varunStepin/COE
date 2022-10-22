@@ -32,7 +32,7 @@
                                 <?php echo $this->Form->create('CifFund', array("class" => "form-horizontal", "type" => "file", 'onsubmit' => "return addCsrfToken()"), array("url" => array("controller" => "Cif", "action" => 'fund')));
                                 echo $this->Form->input('csrf_token', array("type" => "hidden", 'id' => 'csrftoken', "label" => false, 'required', "class" => "form-control rounded", 'value' => ' '));
                                 echo $this->Form->input('type', array("type" => "hidden", "label" => false, 'required', "value" => "insert")); ?>
-
+                              
                                 <div class="form-group ">
                                     <label for="example-text-input" class=" col-form-label">Phase<span class="text-danger">*</span></label>
 
@@ -48,7 +48,7 @@
                                 <div class="form-group ">
                                     <label for="example-text-input" class="col-form-label">Fund Received (INR) <span class="text-danger">*</span></label>
                                     <?php echo $this->Form->input("approved_amount", array("type" => "text", "class" => "form-control isDecimalNumber approved", "required", "label" => false, "placeholder" => "Fund Received (INR)")) ?>
-                                    
+
 
                                 </div>
 
@@ -136,6 +136,7 @@
                                 <thead style="font-size:15px; font-weight:bold;">
                                     <tr class="bg-info">
                                         <th>#</th>
+                                      
                                         <th>Phase</th>
                                         <th>Organization</th>
                                         <th>Fund Received</th>
@@ -160,6 +161,7 @@
                                     ?>
                                             <tr>
                                                 <td><?php echo $i++; ?></td>
+                                              
                                                 <td><?php echo $manage['CifFund']['phase']; ?></td>
                                                 <td><?php echo $manage['CifOrganization']['name']; ?></td>
                                                 <td><?php echo $manage['CifFund']['approved_amount']; ?></td>

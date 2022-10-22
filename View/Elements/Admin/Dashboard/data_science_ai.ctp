@@ -90,7 +90,7 @@
             },
             yAxis: {
                 title: {
-                    text: 'No of Trainers Enrolled '
+                    text: 'Resources Trained In Data Science & Artificial Intelligence'
                 }
             },
             plotOptions: {

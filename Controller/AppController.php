@@ -177,7 +177,6 @@ class AppController extends Controller
 
 	public function encrypt_decrypt($action, $string)
 	{
-		$output = "tesr";
 		$encrypt_method = "AES-256-CBC";
 		$secret_key = 'wt1U5M$8sdfTXGenFAWX5LwQGrLgdbHA';
 		$secret_iv = 'asdd34532sda3rds34;lASDE';
@@ -584,12 +583,13 @@ class AppController extends Controller
 				"Internship" => "Internship Foundation",
 				"AdvanceCourse" => "Advance Project",
 				"OrientationCourse" => "Orientation Awareness",
-
+                "StarterCourse" => "Starter Course",
 				//K-tech COE in A&D Academia
 				"EmbeddedCourse" => "Embedded Course",
 				"TrainingProcess" => "Training in process",
 				"BootCamp" => "Bootcamp",
-
+                "DroneTechnology" => "Drone Technology",
+                "ValueStreamCourse" => "Value Stream Course",
 				//K-tech COE in A&D Skilling
 				"DefenseSkilling" => "Skilling",
 				"DefenseCourse" => "Defense Course"
@@ -605,7 +605,15 @@ class AppController extends Controller
 				"Enablement" => 'Enablement',
 				"Training" => "Training",
 				"White Paper - News Letter" => "White Paper/News Letter",
-				"Workshop" => "Workshop"
+				"Workshop" => "Workshop",
+				"Research" => "Research",
+                "Industry Startup" => "Industry Startups",
+                "Awareness Session" => "Awareness Session",
+                "CyberHygieneHandbook" => "Cyber Hygiene Handbook",
+                "CsAwarenessPosters" => "Awareness Posters",
+                "CsNewsLetter" => "News Letter",
+                "CsVolunteerProgramme" => "Volunteer Programme",
+                "FacultyDevelopmentProgram" => "Faculty Development Program",
 			),
 
 
@@ -614,7 +622,12 @@ class AppController extends Controller
 
 			'K-tech COE in AVGC' => array(
 				//K-tech COE in AVGC
-				"Animation & Visual Effects" => "K-TECH COE IN AVGC"
+				"Animation & Visual Effects" => "K-TECH COE IN AVGC",
+				"Incubation" => 'Incubation',
+                "Body Scan" => "Body Scan 360",
+                "Green Screen" => "Green Screen",
+                "Computer Generated Imagery" => "Computer Generated Imagery",
+                "Motion Capture" => "Motion Capture"
 			),
 
 
@@ -623,11 +636,19 @@ class AppController extends Controller
 
 			'K-tech COE by C-Camp' => array(
 				//K-tech COE by C-Camp
+				"CcampStartUpIncubated" => "StartUp Incubated",
+				"CcampStartUpGraduated" => "StartUp Graduated",
 				"AgricultureInnovation" => "Innovation Agriculture",
 				"ProblemStatement" => "Problem Statement",
 				"EventConducted" => "Events Conducted",
 				"Startup" => "Fund Raised by Startups",
-				"Partnership" => "Partnership"
+				"Partnership" => "Partnership",
+				"CcampHackthon" => "Ccamp Hackthon",
+				"PreIdeation" => "Pre-Ideation",
+				"IdeationWorkshop" => "Ideation-Workshop",
+				"EcosystemBuildingService" => 'Ecosystem Building Service',
+				"CcampWorkshop" => "Ccamp Workshop",
+				"NoOfNewProduct" => "No Of New Product"
 			),
 
 
@@ -645,10 +666,24 @@ class AppController extends Controller
 				"IotPilotsProject" => "Pilots ProjectList",
 				"IotIndustryConnected" => "Industries Connected",
 				"IotAcademiaConnected" => "Academia Connected",
-
+                "IotIncubatedResearcher" => "Researchers Incubated",
+		    	"IotGlobalConferencePaper" => "Global Conference Papers",
+		    	"IotShowcasedPrototype" => "Prototypes Showcased",
 				"IotEventWorkshop" => "Events/Workshops Conducted",
 				"IotOccupancy" => "Occupancy",
-				"IotOtherProgram" => "Other Program"
+				"IotOtherProgram" => "Other Program",
+				"IotWorkshop" => "Iot Workshop",
+				"Demo Days" => "Demo Days",
+				"Investor Connect" => "Investor Connect",
+				"Mentoring" => "Mentoring",
+				"Startup Showcase" => "Startup Showcase",
+				"Enterprise Connect" => "Industry/Enterprise Connect",
+				"Shark Tank" => "Shark Tank",
+				"Boot Camp" => "Boot Camps",
+				"International Connect" => "International Connect",
+				"Soft Landing" => "Soft-landing",
+				"EDP in Tier" => "EDP in Tier- II/III Cities",
+				"Women Entrepreneurs" => "Programs for Women Entrepreneurs",
 			),
 
 
@@ -661,7 +696,9 @@ class AppController extends Controller
 				"StartupConferences" => "Startup Conference",
 				"StudentEnrollment" => "Student Enrollment",
 				"GovtOfficialTraining" => "Training of Govt Officials",
-				"Patent" => "Patents"
+				"Patent" => "Patents",
+				"OpenExperienceCentre" => "Open Experience Centre New",
+                "Mentorship" => "Mentorship",
 			),
 
 
@@ -803,5 +840,37 @@ class AppController extends Controller
 		$this->set('targetType', $array);
 		// print_r($array);
 		$this->set('tableDisplaydata', $tableDisplaydata);
+	}
+	public function getDroneTechnologyCourse()
+	{
+		$list_array = array();
+		$details = $this->AerospaceDefenseDroneTechnology->find('all', array("order" => "AerospaceDefenseDroneTechnology.id ASC"));
+
+		foreach ($details as $list) {
+			$list_array[$list['AerospaceDefenseDroneTechnology']['id']] = $list['AerospaceDefenseDroneTechnology']['embedded_course'];
+		}
+		$this->set('embedded_course', $list_array);
+	}
+
+	public function getValueStreamCourse()
+	{
+		$list_array = array();
+		$details = $this->AerospaceDefenseValueStreamCourse->find('all', array("order" => "AerospaceDefenseValueStreamCourse.id ASC"));
+
+		foreach ($details as $list) {
+			$list_array[$list['AerospaceDefenseValueStreamCourse']['id']] = $list['AerospaceDefenseValueStreamCourse']['embedded_course'];
+		}
+		$this->set('embedded_course', $list_array);
+	}
+	public static function getCentres()
+	{
+		return ['Belgavi' => 'Belgavi','Jalahalli'=>'Jalahalli','Mangalore '=>'Mangalore','Mysuru'=>'Mysuru','Shivamogga'=>'Shivamogga'];
+	}
+		public function getMonthName($monthNo)
+	{
+		$month_data = array();
+		$month_array = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+
+		return $month_array[$monthNo+1];
 	}
 }

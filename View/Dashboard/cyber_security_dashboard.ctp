@@ -8,11 +8,11 @@
         </div>
         <div class="row mt-15">
             <div class="col-12 mb-20">
-                 </div>
+            </div>
             <div class="col-12">
                 <div class="box ">
                     <div class=" box-header with-border">
-                        <h4 class="box-title text-info">Workshop</h4>
+                        <h4 class="box-title text-info">K-tech COE in CS</h4>
                         <div class="pull-right">
                             <?php echo $this->Html->link('<span> Finance Dashboard <i class="fa fa-arrow-right"></i></span>',array("controller"=>"Dashboard","action"=>"financeDashboard","cyberSecurityFund"),array('class'=>'btn btn-primary ml-10 pull-right btn-sm',"escape"=>false));?>
                             <?php echo $this->Html->link('<span><i class="fa fa-arrow-left"></i> Dashboard</span>',array("controller"=>"Admin","action"=>"dashboard"),array('class'=>'btn btn-info pull-right btn-sm',"escape"=>false));?>
@@ -20,6 +20,20 @@
                     </div>
                     <div class="box-body">
                         <div id="research_project" style="height: 400px;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row mt-15">
+            <div class="col-12 mb-20">
+            </div>
+            <div class="col-12">
+                <div class="box ">
+                    <div class=" box-header with-border">
+                    <h4 class="box-title text-info">K-tech COE in CS</h4>
+                    </div>
+                    <div class="box-body">
+                        <div id="research_project1" style="height: 400px;"></div>
                     </div>
                 </div>
             </div>
@@ -109,7 +123,7 @@
             },
             yAxis: {
                 title: {
-                    text: 'No. of Internship/Training/Enablement/Workshops conducted'
+                    text: 'No. of Internship/Training/Enablement/Workshops conducted/Research/Industry Startups'
                 }
             },
             credits: {
@@ -141,6 +155,8 @@
                     ['Training',final_array['Training']['Target']['count'],'Training-YearWise-Target',colors1[0]],
                     ['White Paper - News Letter',final_array['White Paper - News Letter']['Target']['count'],'White Paper - News Letter-YearWise-Target',colors1[0]],
                     ['Workshop',final_array['Workshop']['Target']['count'],'Workshop-YearWise-Target',colors1[0]],
+                    ['Research',final_array['Research']['Target']['count'],'Research-YearWise-Target',colors1[0]],
+                    ['Industry Startup',final_array['Industry Startup']['Target']['count'],'Industry Startup-YearWise-Target',colors1[0]],
                 ],
                 keys: ['name', 'y', 'drilldown','color'],
                 color:colors1[0]
@@ -152,6 +168,138 @@
                     ['Training',final_array['Training']['Achieve']['count'],'Training-YearWise-Achieved',colors1[1]],
                     ['White Paper - News Letter',final_array['White Paper - News Letter']['Achieve']['count'],'White Paper - News Letter-YearWise-Achieved',colors1[1]],
                     ['Workshop',final_array['Workshop']['Achieve']['count'],'Workshop-YearWise-Achieved',colors1[1]],
+                    ['Research',final_array['Research']['Achieve']['count'],'Research-YearWise-Achieved',colors1[1]],
+                    ['Industry Startup',final_array['Industry Startup']['Achieve']['count'],'Industry Startup-YearWise-Achieved',colors1[1]],
+                ],
+                keys: ['name', 'y', 'drilldown','color'],
+                color:colors1[1]
+            }],
+            drilldown: {
+                allowPointDrilldown: false,
+                series:researchDrillDown
+            }
+        });
+
+    });
+</script>
+
+<script>
+    $(function () {
+        var colors1 = ['#FB7A07', '#DA07FB'];
+
+        var final_array=<?= json_encode($final_array) ?>;
+
+
+
+        researchDrillDown = [];
+
+        $.each(final_array,function(index, value){
+            $.each(final_array[index],function(index1, value1){
+
+                year=[];
+                $.each(final_array[index]['Target']['Year'],function(index2, value2){
+                    year.push(
+                        [index2, value2, index+'-'+index2+'-Target']
+                    );
+                    researchDrillDown.push({
+                        id: index+'-YearWise-Target',
+                        name: index+'-YearWise-Target',
+                        data: year,
+                        keys: ['name', 'y', 'drilldown']
+                    });
+
+
+                });
+
+                achieveYear=[];
+                $.each(final_array[index]['Achieve']['Year'],function(index2, value2){
+                    achieveYear.push(
+                        [index2, value2, index+'-'+index2+'-Achieved']
+                    );
+                    researchDrillDown.push( {
+                        id: index+'-YearWise-Achieved',
+                        name: index+'-YearWise-Achieved',
+                        data: achieveYear,
+                        keys: ['name', 'y', 'drilldown']
+                    });
+
+                    month=[]
+                    $.each(final_array[index]['Achieve'][index2],function(index5, value5){
+                        month.push([index5, parseInt(value5), index,index2]);
+                        researchDrillDown.push({
+                            id: index+'-'+index2+'-Achieved',
+                            name: index+'-'+index2+'-Achieved',
+                            data: month,
+                            keys: ['name', 'y', 'shName','year']
+                        });
+                    });
+                });
+            });
+        });
+        console.log(researchDrillDown);
+
+
+
+        Highcharts.chart('research_project1', {
+            chart: {
+                type: 'column',
+            },
+            title: {
+                text: ''
+            },
+            subtitle: {
+                text: ''
+            },
+            xAxis: {
+                type: 'category'
+            },
+            yAxis: {
+                title: {
+                    text: 'Awareness Sessions/Cyber Hygiene Handbook/Awareness Posters/News Letter/Volunteer Programme/Faculty Development Program'
+                }
+            },
+            credits: {
+                enabled: false
+            },
+            plotOptions: {
+                series: {
+                    borderWidth: 0,
+                    dataLabels: {
+                        enabled: true
+                    },
+                    cursor: 'pointer',
+                    point: {
+                        events: {
+                            click: function () {
+                                if(this.y >0 && this.year!='' && this.year>0){
+                                    $(this).loadModalData(this.shName,this.year,this.name);
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            series: [{
+                name: 'Target',
+                data: [
+                    ['Awareness Session',final_array['Awareness Session']['Target']['count'],'Awareness Session-YearWise-Target',colors1[0]],
+                    ['Cyber Hygiene Handbook',final_array['CyberHygieneHandbook']['Target']['count'],'CyberHygieneHandbook-YearWise-Target',colors1[0]],
+                    ['Awareness Posters',final_array['CsAwarenessPosters']['Target']['count'],'CsAwarenessPosters-YearWise-Target',colors1[0]],
+                    ['News Letter',final_array['CsNewsLetter']['Target']['count'],'CsNewsLetter-YearWise-Target',colors1[0]],
+                    ['Volunteer Programme',final_array['CsVolunteerProgramme']['Target']['count'],'CsVolunteerProgramme-YearWise-Target',colors1[0]],
+                    ['Faculty Development Program',final_array['FacultyDevelopmentProgram']['Target']['count'],'FacultyDevelopmentProgram-YearWise-Target',colors1[0]],
+                ],
+                keys: ['name', 'y', 'drilldown','color'],
+                color:colors1[0]
+            }, {
+                name: 'Achieved',
+                data: [
+                    ['Awareness Session',final_array['Awareness Session']['Achieve']['count'],'Awareness Session-YearWise-Achieved',colors1[1]],
+                    ['Cyber Hygiene Handbook',final_array['CyberHygieneHandbook']['Achieve']['count'],'CyberHygieneHandbook-YearWise-Achieved',colors1[1]],
+                    ['Awareness Posters',final_array['CsAwarenessPosters']['Achieve']['count'],'CsAwarenessPosters-YearWise-Achieved',colors1[1]],
+                    ['News Letter',final_array['CsNewsLetter']['Achieve']['count'],'CsNewsLetter-YearWise-Achieved',colors1[1]],
+                    ['Volunteer Programme',final_array['CsVolunteerProgramme']['Achieve']['count'],'CsVolunteerProgramme-YearWise-Achieved',colors1[1]],
+                    ['Faculty Development Program',final_array['FacultyDevelopmentProgram']['Achieve']['count'],'FacultyDevelopmentProgram-YearWise-Achieved',colors1[1]],
                 ],
                 keys: ['name', 'y', 'drilldown','color'],
                 color:colors1[1]

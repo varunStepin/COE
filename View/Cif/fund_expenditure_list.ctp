@@ -32,6 +32,7 @@
                 <thead style="font-size:15px; font-weight:bold;">
                   <tr class="bg-info">
                     <th>#</th>
+                   
                     <th>Phase</th>
                     <th>Finance Year</th>
                     <th>Organization</th>
@@ -57,6 +58,7 @@
                   ?>
                       <tr>
                         <td><?php echo $i++; ?></td>
+                       
                         <td><?php echo $manage['CifExpenditure']['phase']; ?></td>
                         <td><?php echo $manage['FinancialYear']['year']; ?></td>
                         <td><?php echo $manage['CifOrganization']['name']; ?></td>

@@ -408,6 +408,7 @@ class CifController extends AppController
                         'is_women_founder' => ($getData[9] != '') ? $getData[9] : '',   
                         'year' => ($getData[10] != '') ? $getData[10] : '',
                         'phase' => ($getData[11] != '') ? $getData[11] : '',
+                        'centre' => ($getData[12] != '') ? $getData[12] : '',
                     ));
                     $details[] = $getData;
                 }
@@ -1332,6 +1333,7 @@ class CifController extends AppController
                                 'details'=>  ($getData[4]!='')?$getData[4]:'',
                                 'remarks'=>           ($getData[5]!='')?$getData[5]:'',
                                 'phase'=>($getData[6]!='')?$getData[6]:'',
+                                'centre' => ($getData[7] != '') ? $getData[7] : '',
 
 
                             ));

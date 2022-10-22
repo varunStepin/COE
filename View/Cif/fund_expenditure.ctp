@@ -18,28 +18,26 @@
     <section class="content">
 
         <div class="row">
-             <div class="col-12 text-center"><span class="text-danger"><b>NOTE </b>:Please fill up the form for individual line items of expenditure.  For bulk upload, please download the sample template, fill it and upload the same</span></div>
+            <div class="col-12 text-center"><span class="text-danger"><b>NOTE </b>:Please fill up the form for individual line items of expenditure. For bulk upload, please download the sample template, fill it and upload the same</span></div>
             <div class="col-lg-1"></div>
             <div class="col-lg-10 col-12">
                 <!-- Basic Forms -->
                 <div class="box">
                     <div class="box-header with-border">
-                        <?php echo $this->Html->link('Expenditure list', array("controller" => "Cif", "action" =>"fundExpenditureList"), array("class" => "ml-5 btn btn-info btn-sm pull-right", "escape" => false,));  ?>
+                        <?php echo $this->Html->link('Expenditure list', array("controller" => "Cif", "action" => "fundExpenditureList"), array("class" => "ml-5 btn btn-info btn-sm pull-right", "escape" => false,));  ?>
 
-                        <a href="<?php echo $this->webroot .'excel_dounload/cif_expense.xls'; ?>" class="btn btn-sm btn-outline-danger pull-right">Template Download <i
-                                    class="fa fa-download"></i> </a>
-                        <a href="javascript:void(0)" class="btn btn-sm btn-outline-success pull-right mr-5"
-                           id="bulkUpload">Excel Upload <i class="fa fa-upload"></i> </a>
+                        <a href="<?php echo $this->webroot . 'excel_dounload/cif_expense.xls'; ?>" class="btn btn-sm btn-outline-danger pull-right">Template Download <i class="fa fa-download"></i> </a>
+                        <a href="javascript:void(0)" class="btn btn-sm btn-outline-success pull-right mr-5" id="bulkUpload">Excel Upload <i class="fa fa-upload"></i> </a>
                         <div style="display: none">
 
-                                <?php
-                                echo $this->Form->create('Exel',array("url"=>array("controller"=>"Cif","action"=>"fundExpenditure"),"class"=>"form-horizontal",'id'=>'excel_import_form',"type"=>"file",'onsubmit'=>"return addCsrfToken()"));
+                            <?php
+                            echo $this->Form->create('Exel', array("url" => array("controller" => "Cif", "action" => "fundExpenditure"), "class" => "form-horizontal", 'id' => 'excel_import_form', "type" => "file", 'onsubmit' => "return addCsrfToken()"));
 
-                                echo $this->Form->input('finance_year_id',array("type"=>"hidden","label"=>false,'required',"id"=>"excel_program_id"));
-                                echo $this->Form->input('cif_organization_id',array("type"=>"hidden","label"=>false,'required',"id"=>"excel_oranization_id"));
-                                echo $this->Form->input('file',array("type"=>"file",'id'=>'excel_file',"class"=>"form-control doc_type","label"=>false));
-                                echo $this->Form->end();
-                                ?>
+                            echo $this->Form->input('finance_year_id', array("type" => "hidden", "label" => false, 'required', "id" => "excel_program_id"));
+                            echo $this->Form->input('cif_organization_id', array("type" => "hidden", "label" => false, 'required', "id" => "excel_oranization_id"));
+                            echo $this->Form->input('file', array("type" => "file", 'id' => 'excel_file', "class" => "form-control doc_type", "label" => false));
+                            echo $this->Form->end();
+                            ?>
 
                         </div>
                     </div>
@@ -56,27 +54,28 @@
                         echo $this->Form->input('document', array("type" => "hidden", "label" => false, 'required')); ?>
 
                         <div class="row">
-                        <div class="col-lg-6 col-12">
+                           
+                            <div class="col-lg-6 col-12">
                                 <div class="form-group row ">
-                                    <label for="example-text-input" class="col-sm-5 col-form-label">Phase<span  class="text-danger">*</span></label>
+                                    <label for="example-text-input" class="col-sm-5 col-form-label">Phase<span class="text-danger">*</span></label>
                                     <div class="col-sm-7">
-                                    <?php echo $this->Form->input("phase", array("type" => "select", "options" => AppController::getPhase(), "empty" => "Select Phase", "class" => "form-control", "required", "label" => false)) ?>
+                                        <?php echo $this->Form->input("phase", array("type" => "select", "options" => AppController::getPhase(), "empty" => "Select Phase", "class" => "form-control", "required", "label" => false)) ?>
                                     </div>
                                 </div>
                             </div>
                             <div class="col-lg-6 col-12">
                                 <div class="form-group row ">
-                                    <label for="example-text-input" class="col-sm-5 col-form-label">Financial Year<span  class="text-danger">*</span></label>
+                                    <label for="example-text-input" class="col-sm-5 col-form-label">Financial Year<span class="text-danger">*</span></label>
                                     <div class="col-sm-7">
-                                        <?php echo $this->Form->input("financial_year_id", array("type" => "select", "label" => false,"class" => "form-control", 'id' => 'fundYear', "options"=>$financialYear, 'required')); ?>
+                                        <?php echo $this->Form->input("financial_year_id", array("type" => "select", "label" => false, "class" => "form-control", 'id' => 'fundYear', "options" => $financialYear, 'required')); ?>
                                     </div>
                                 </div>
                             </div>
                             <div class="col-lg-6 col-12">
                                 <div class="form-group row ">
-                                    <label for="example-text-input" class="col-sm-5 col-form-label">Organization<span  class="text-danger">*</span></label>
+                                    <label for="example-text-input" class="col-sm-5 col-form-label">Organization<span class="text-danger">*</span></label>
                                     <div class="col-sm-7">
-                                        <?php echo $this->Form->input("cif_organization_id", array("type" => "select", "label" => false,"class" => "form-control", 'id' => 'organization', "options"=>$organization, 'required')); ?>
+                                        <?php echo $this->Form->input("cif_organization_id", array("type" => "select", "label" => false, "class" => "form-control", 'id' => 'organization', "options" => $organization, 'required')); ?>
                                     </div>
                                 </div>
                             </div>
@@ -92,8 +91,7 @@
                             </div>
                             <div class="col-lg-6 col-12">
                                 <div class="form-group row">
-                                    <label for="example-text-input" class="col-sm-5 col-form-label">Expense Type<span
-                                                class="text-danger">*</span></label>
+                                    <label for="example-text-input" class="col-sm-5 col-form-label">Expense Type<span class="text-danger">*</span></label>
                                     <div class="col-sm-7">
                                         <?php echo $this->Form->input("expense_type", array("type" => "select", "empty" => "Select Expense Type", "options" => array('CAPEX' => 'CAPEX', 'OPEX' => 'OPEX'), "required", "class" => "form-control", "label" => false)) ?>
                                     </div>
@@ -101,8 +99,7 @@
                             </div>
                             <div class="col-lg-6 col-12">
                                 <div class="form-group row">
-                                    <label for="example-text-input" class="col-sm-5 col-form-label">Date of Expense (Start Date)<span
-                                                class="text-danger">*</span></label>
+                                    <label for="example-text-input" class="col-sm-5 col-form-label">Date of Expense (Start Date)<span class="text-danger">*</span></label>
                                     <div class="col-sm-7">
                                         <?php echo $this->Form->input("date", array("type" => "text", "autocomplete" => "off", "id" => "datepicker", "label" => false, 'class' => "form-control ", 'required', "placeholder" => "Start Date")); ?>
                                     </div>
@@ -110,8 +107,7 @@
                             </div>
                             <div class="col-lg-6 col-12">
                                 <div class="form-group row">
-                                    <label for="example-text-input" class="col-sm-5 col-form-label">Date of Expense(End Date)<span
-                                                class="text-danger">*</span></label>
+                                    <label for="example-text-input" class="col-sm-5 col-form-label">Date of Expense(End Date)<span class="text-danger">*</span></label>
                                     <div class="col-sm-7">
                                         <?php echo $this->Form->input("end_date", array("type" => "text", "autocomplete" => "off", "label" => false, 'class' => "datepicker form-control ", 'required', "placeholder" => "End Date")); ?>
                                     </div>
@@ -129,10 +125,9 @@
                             </div>
                             <div class="col-lg-6 col-12">
                                 <div class="form-group row">
-                                    <label for="example-text-input" class="col-sm-5 col-form-label">Remarks <span
-                                                class="text-danger">*</span></label>
+                                    <label for="example-text-input" class="col-sm-5 col-form-label">Remarks <span class="text-danger">*</span></label>
                                     <div class="col-sm-7">
-                                        <?php echo $this->Form->input("remarks", array("type" => "textarea","rows"=>2, "class" => "form-control", "required", "label" => false, "placeholder" => "Remarks")) ?>
+                                        <?php echo $this->Form->input("remarks", array("type" => "textarea", "rows" => 2, "class" => "form-control", "required", "label" => false, "placeholder" => "Remarks")) ?>
                                     </div>
                                 </div>
                             </div>
@@ -199,20 +194,20 @@ echo $this->Form->end();
     }
 </script>
 <script>
-    $('#bulkUpload').on('click',function () {
+    $('#bulkUpload').on('click', function() {
         $('#excel_program_id').val($('#fundYear').val())
         $('#excel_oranization_id').val($('#organization').val())
-            $('#excel_file').click();
+        $('#excel_file').click();
 
     });
-    $('#excel_file').on('change',function () {
-       
+    $('#excel_file').on('change', function() {
+
 
         $('#excel_import_form').submit();
     });
 </script>
 <!-- <script>
-    var elementTitle='.<?=$action ?>'
+    var elementTitle='.<?= $action ?>'
 
     $(elementTitle).addClass('active').parents('li').addClass('active')
 </script> -->

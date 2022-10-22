@@ -1149,5 +1149,59 @@ class MachineIntelligenceController extends AppController {
         $this->changeCSRFToken();
 		
     }
+    public function openExperienceCentreNew($id=null)
+    {
+        $this->layout = 'fab_layout';
+        $this->getStartUps();
+
+        $this->_userSessionCheckout();
+        $this->loadModel('OpenExperienceCentre');
+
+        if (!empty($this->request->data)) {
+            if ($this->request->data['OpenExperienceCentre']['csrf_token'] != $this->Session->read('CSRFTOKEN')) {
+                $this->Session->setFlash("<div id='php-alert' class='alert alert-dismissible alert-success'><span class='glyphicon glyphicon-remove-circle'></span><button type='button' class='close' data-dismiss='alert' aria-label='Close'><span aria-hidden='true' style='color:black;'>&times;</span></button> Unauthorized access. Please try again.</div>");
+                $this->redirect(array('action' => 'openExperienceCentreNew'));
+            }
+        }
+        if ($this->request->data['OpenExperienceCentre']['type'] == "edit") {
+            $this->request->data = $this->OpenExperienceCentre->read(null, $this->request->data['OpenExperienceCentre']['id']);
+            $this->request->data['OpenExperienceCentre']['month'] = $this->request->data['OpenExperienceCentre']['month'] . '-' . $this->request->data['OpenExperienceCentre']['year'];
+        } else if ($this->request->data['OpenExperienceCentre']['type'] == "delete") {
+            $investor_id = $this->request->data['OpenExperienceCentre']['id'];
+
+            if ($this->OpenExperienceCentre->delete($investor_id)) {
+                $this->Session->setFlash("<div id='php-alert' class='alert alert-dismissible alert-danger'><span class='glyphicon glyphicon-remove-circle'></span><button type='button' class='close' data-dismiss='alert' aria-label='Close'><span aria-hidden='true' style='color:black;'>&times;</span></button> Data has been deleted Successfully.</div>");
+
+                $this->redirect(array('action' => 'openExperienceCentreNew'));
+            } else {
+                $this->Session->setFlash("<div id='php-alert' class='alert alert-dismissible alert-danger'><span class='glyphicon glyphicon-remove-circle'></span><button type='button' class='close' data-dismiss='alert' aria-label='Close'><span aria-hidden='true' style='color:black;'>&times;</span></button>Failed to delete.Please try again.</div>");
+
+                $this->redirect(array('action' => 'openExperienceCentreNew'));
+            }
+        } else if ($this->request->data['OpenExperienceCentre']['type'] == "insert") {
+
+            if ($this->request->data['OpenExperienceCentre']['id']) {
+                $message = "Updated Successfully";
+            } else {
+                $message = "Added Successfully";
+            }
+            
+            $monthYear = explode('-', $this->request->data['OpenExperienceCentre']['start_date']);
+            $this->request->data['OpenExperienceCentre']['month'] = date('F', mktime(0, 0, 0, $monthYear[1], 10));
+            $this->request->data['OpenExperienceCentre']['year'] = $monthYear[2];
+
+            $incubation_date =  $this->request->data['OpenExperienceCentre']['start_date'];
+            $incubation_date_new = new DateTime($incubation_date);
+            $this->request->data['OpenExperienceCentre']['start_date'] =  $incubation_date_new->format('Y-m-d');
+            $this->OpenExperienceCentre->save($this->request->data);
+            $this->Session->setFlash("<div id='php-alert' class='alert alert-dismissible alert-success'><span class='glyphicon glyphicon-remove-circle'></span><button type='button' class='close' data-dismiss='alert' aria-label='Close'><span aria-hidden='true' style='color:black;'>&times;</span></button> " . $message . ".</div>");
+            $this->redirect(array('action' => 'openExperienceCentreNew'));
+        }
+
+        $manage_list = $this->OpenExperienceCentre->find('all', array("order" => array('OpenExperienceCentre.id DESC')));
+        $this->set('table_list', $manage_list);
+
+        $this->changeCSRFToken();
+    }
 
 }

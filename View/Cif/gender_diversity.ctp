@@ -31,12 +31,18 @@
 								echo $this->Form->input('csrf_token', array("type" => "hidden", 'id' => 'csrftoken', "label" => false, 'required', "class" => "form-control rounded", 'value' => ' '));
 								echo $this->Form->input('type', array("type" => "hidden", "label" => false, 'required', "value" => "insert"));
 								echo $this->Form->input("id", array("type" => "hidden", "label" => false, 'class' => "form-control", "value" => $this->request->data['CifGenderDiversity']['id'])); ?>
-
+								<div class="form-group row">
+									<label for="example-text-input" class="col-sm-4 col-form-label">Centre <span class="text-danger">*</span></label>
+									<div class="col-sm-8">
+										<?php
+										echo $this->Form->input("centre", array("type" => "select", "options" => AppController::getCentres(), "empty" => "Select Centre", "class" => "form-control", "required", "label" => false)) ?>
+									</div>
+								</div>
 								<div class="form-group row">
 									<label for="example-text-input" class="col-sm-4 col-form-label">Phase <span class="text-danger">*</span></label>
 									<div class="col-sm-8">
 										<?php
-										 echo $this->Form->input("phase", array("type" => "select", "options" => AppController::getPhase(), "empty" => "Select Phase", "class" => "form-control", "required", "label" => false)) ?>
+										echo $this->Form->input("phase", array("type" => "select", "options" => AppController::getPhase(), "empty" => "Select Phase", "class" => "form-control", "required", "label" => false)) ?>
 									</div>
 								</div>
 								<div class="form-group row">
@@ -122,6 +128,7 @@
 								<thead style="font-size:15px; font-weight:bold;">
 									<tr class="bg-info">
 										<th>#</th>
+										<th>Centre</th>
 										<th>Phase</th>
 										<th>Year</th>
 										<th>Event Type</th>
@@ -130,6 +137,7 @@
 										<th># of Participants</th>
 										<th># of Woman Participants</th>
 										<th>% of Woman Participants</th>
+										
 										<!--<th>Month-Year</th>-->
 										<th>Action</th>
 									</tr>
@@ -144,6 +152,7 @@
 									?>
 											<tr>
 												<td><?php echo $i++; ?></td>
+												<td><?php echo $list['CifGenderDiversity']['centre']; ?></td>
 												<td><?php echo $list['CifGenderDiversity']['phase']; ?></td>
 												<td><?php echo $list['CifGenderDiversity']['year']; ?></td>
 												<td><?php echo $list['CifGenderDiversity']['event_type']; ?></td>
@@ -152,6 +161,7 @@
 												<td><?php echo $list['CifGenderDiversity']['no_participants']; ?></td>
 												<td><?php echo $list['CifGenderDiversity']['no_woman_participants']; ?></td>
 												<td><?php echo $list['CifGenderDiversity']['percentage_woman_participants']; ?></td>
+												
 												<!--<td><?php /*echo $list['DsHackathon']['month'] .'-'.  $list['DsHackathon']['year'];*/ ?></td>-->
 												<td>
 													<a href="#" onclick="addIdToForm(<?php echo $id ?>,'delete')"><i style="font-size:12px;" class="glyphicon glyphicon-trash"></i></a>

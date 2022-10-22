@@ -107,7 +107,7 @@
             },
             yAxis: {
                 title: {
-                    text: 'No of Companies/Partners/Cohorts'
+                    text: 'No of companies incubated/ Exits/ Successful/ Partners/Cohorts'
                 }
             },
             credits: {
@@ -134,7 +134,7 @@
             series: [{
                 name: 'Target',
                 data: [
-                    ['Companies',final_array['Companies']['Target']['count'],'Companies-YearWise-Target',colors1[0]],
+                    ['Total No of Product Companies/ Incubatees Supported',final_array['Companies']['Target']['count'],'Companies-YearWise-Target',colors1[0]],
                     ['Partners',final_array['Partners']['Target']['count'],'Partners-YearWise-Target',colors1[0]],
                     ['Cohort',final_array['Cohort']['Target']['count'],'Cohort-YearWise-Target',colors1[0]],
                  ['SuccessfulCompany',final_array['SuccessfulCompany']['Target']['count'],'SuccessfulCompany-YearWise-Target',colors1[0]],
@@ -145,7 +145,7 @@
             }, {
                 name: 'Achieved',
                 data: [
-                    ['Companies',final_array['Companies']['Achieve']['count'],'Companies-YearWise-Achieved',colors1[1]],
+                    ['Total No of Product Companies/ Incubatees Supported',final_array['Companies']['Achieve']['count'],'Companies-YearWise-Achieved',colors1[1]],
                     ['Partners',final_array['Partners']['Achieve']['count'],'Partners-YearWise-Achieved',colors1[1]],
                     ['Cohort',final_array['Cohort']['Achieve']['count'],'Cohort-YearWise-Achieved',colors1[1]],
                  ['SuccessfulCompany',final_array['SuccessfulCompany']['Achieve']['count'],'SuccessfulCompany-YearWise-Achieved',colors1[1]],

@@ -5,7 +5,7 @@
 	<!-- Content Header (Page header) -->
 	<section class="content-header">
 		<h1>
-			Target
+			Organization
 		</h1>
 		<ol class="breadcrumb">
 			<li class="breadcrumb-item"><i class="fa fa-dashboard"></i><?php echo $this->Html->link('<span>Home  </span>', array("controller" => "Admin", "action" => "cifDashboard"), array("escape" => false)); ?></li>
@@ -33,6 +33,13 @@
 								<?php echo $this->Form->create('CifOrganization', array("class" => "form-horizontal", 'onsubmit' => "return addCsrfToken()"), array("url" => array("controller" => "Cif", "action" => "organization")));
 								echo $this->Form->input('csrf_token', array("type" => "hidden", 'id' => 'csrftoken', "label" => false, 'required', "class" => "form-control rounded", 'value' => ' '));
 								echo $this->Form->input('types', array("type" => "hidden", "label" => false, 'required', "value" => "insert")); ?>
+									<div class="form-group row">
+									<label for="example-text-input" class="col-sm-4 col-form-label">Centre <span class="text-danger">*</span></label>
+									<div class="col-sm-8">
+										<?php
+										  echo $this->Form->input("centre",array("type"=>"select","options"=>AppController::getCentres(),"empty"=>"Select Centre","class"=>"form-control","required","label"=>false))?>
+									</div>
+								</div>
 								<div class="form-group row">
 									<label for="example-text-input" class="col-sm-4 col-form-label">Phase<span class="text-danger">*</span></label>
 									<div class="col-sm-8">
@@ -80,6 +87,7 @@
 								<thead style="font-size:15px; font-weight:bold;">
 									<tr class="bg-info">
 										<th>#</th>
+										<th>Centre</th>
 										<th>Phase</th>
 										<th>Organization Name</th>
 										<th>Action</th>
@@ -96,6 +104,7 @@
 									?>
 											<tr>
 												<td><?php echo $i++; ?></td>
+												<td><?php echo $list['CifOrganization']['centre']; ?></td>
 												<td><?php echo $list['CifOrganization']['phase']; ?></td>
 												<td><?php echo $list['CifOrganization']['name']; ?></td>
 												<td>

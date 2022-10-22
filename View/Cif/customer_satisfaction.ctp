@@ -34,6 +34,10 @@
                 echo $this->Form->input('id', array("type" => "hidden", "label" => false)); ?>
                 <?php //print_r($this->request->data); 
                 ?>
+                  <div class="form-group ">
+                  <label for="example-text-input" class=" col-form-label">Centre<span class="text-danger">*</span></label>
+                  <?php echo $this->Form->input("centre", array("type" => "select", "options" => AppController::getCentres(), "empty" => "Select Centre", "class" => "form-control", "required", "label" => false)) ?>
+                </div>
                  <div class="form-group ">
                   <label for="example-text-input" class=" col-form-label">Phase<span class="text-danger">*</span></label>
                   <?php echo $this->Form->input("phase", array("type" => "select", "options" => AppController::getPhase(), "empty" => "Select Phase", "class" => "form-control", "required", "label" => false)) ?>
@@ -99,6 +103,7 @@
                 <thead style="font-size:15px; font-weight:bold;">
                   <tr class="bg-info">
                     <th>#</th>
+                    <th>Centre</th>
                     <th>Phase</th>
                     <th>Year</th>
                     <th>Feedback Conducted Date</th>
@@ -118,6 +123,7 @@
                   ?>
                       <tr>
                         <td><?php echo $i++; ?></td>
+                        <td><?php echo $manage['CifCustomerSatisfaction']['centre']; ?></td>
                         <td><?php echo $manage['CifCustomerSatisfaction']['phase']; ?></td>
                         <td><?php echo $manage['CifCustomerSatisfaction']['year']; ?></td>
                         <td><?php echo date('d-m-Y', strtotime($manage['CifCustomerSatisfaction']['feedback_date'])); ?></td>

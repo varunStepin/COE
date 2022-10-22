@@ -33,6 +33,7 @@
 					<thead>
 						<tr class="bg-info">
 							<th>#</th>
+              <th>Centre</th>
               <th>Phase</th>
               <th>Year</th>
 							<th>Startup Name</th>
@@ -44,7 +45,8 @@
               <th># of emp</th>
               <th># of women emp</th>
               <th>Is woman founder</th>
-              <th>Contact Number</th>              
+              <th>Contact Number</th>  
+                          
 							<!--<th>Month-Year</th>-->
 							<th>Action</th>
 						</tr>
@@ -58,6 +60,7 @@
 						?>
 						<tr>
 							<td><?php echo $i++;?></td>
+              <td><?php echo $list['CifStartup']['centre']; ?></td>
               <td><?php echo $list['CifStartup']['phase']; ?></td>
               <td><?php echo $list['CifStartup']['year']; ?></td>
 							<td><?php echo $list['CifStartup']['startup_name']; ?></td>
@@ -70,6 +73,7 @@
               <td><?php echo $list['CifStartup']['no_employees_women']; ?></td>
               <td><?php echo($list['CifStartup']['is_women_founder'])?"Yes":"No";?></td>
               <td><?php echo $list['CifStartup']['mobile']; ?></td>
+             
                            
               <!--<td><?php /*echo $list['IotStartUp']['month'].'-'.$list['IotStartUp']['year'];*/?></td>-->
 

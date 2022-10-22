@@ -119,6 +119,8 @@
                     ['GovtOfficialTraining',mi_array['GovtOfficialTraining']['Target']['count'],'GovtOfficialTraining-YearWise-Target',colors1[0]],
                     ['StudentEnrollment',mi_array['StudentEnrollment']['Target']['count'],'StudentEnrollment-YearWise-Target',colors1[0]],
                     ['Patent',mi_array['Patent']['Target']['count'],'Patent-YearWise-Target',colors1[0]],
+                    ['OpenExperienceCentre',mi_array['OpenExperienceCentre']['Target']['count'],'OpenExperienceCentre-YearWise-Target',colors1[0]],
+                    ['Mentorship',mi_array['Mentorship']['Target']['count'],'Mentorship-YearWise-Target',colors1[0]],
                 ],
                 keys: ['name', 'y', 'drilldown','color'],
                 color:colors1[0]
@@ -132,6 +134,8 @@
                     ['GovtOfficialTraining',mi_array['GovtOfficialTraining']['Achieve']['count'],'GovtOfficialTraining-YearWise-Achieved',colors1[1]],
                     ['StudentEnrollment',mi_array['StudentEnrollment']['Achieve']['count'],'StudentEnrollment-YearWise-Achieved',colors1[1]],
                     ['Patent',mi_array['Patent']['Achieve']['count'],'Patent-YearWise-Achieved',colors1[1]],
+                    ['OpenExperienceCentre',mi_array['OpenExperienceCentre']['Achieve']['count'],'OpenExperienceCentre-YearWise-Achieved',colors1[1]],
+                    ['Mentorship',mi_array['Mentorship']['Achieve']['count'],'Mentorship-YearWise-Achieved',colors1[1]],
                 ],
                 keys: ['name', 'y', 'drilldown','color'],
                 color:colors1[1]

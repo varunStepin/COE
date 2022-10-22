@@ -60,12 +60,7 @@
 
 
                                 <div class="row">
-                                <div class="col-sm-12 col-md-6 col-lg-3">
-                                        <div class="form-group ">
-							                <label for="example-text-input" class="col-form-label">Phase<span class="text-danger">*</span></label>
-							                <?php echo $this->Form->input("phase",array("type"=>"select","options"=>AppController::getPhase(),"empty"=>"Select Phase","class"=>"form-control","required","label"=>false))?>
-						                </div>
-                                    </div>
+                              
                                     <div class="col-sm-12 col-md-6 col-lg-4">
                                         <div class="form-group">
                                             <label>Start Up Name <span class="text-danger"> *</span></label>

@@ -55,6 +55,13 @@
                         <div class="row">
                             <div class="col-12">
                                 <div class="row">
+                                <div class="col-sm-12 col-md-6 col-lg-3">
+                                        <div class="form-group">
+                                            <label>Centre<span class="text-danger">*</span></label>
+                                            <?php
+                                            echo $this->Form->input("centre",array("type"=>"select","options"=>AppController::getCentres(),"empty"=>"Select Centre","class"=>"form-control","required","label"=>false))?>
+                                        </div>
+                                    </div>
                                     <div class="col-sm-12 col-md-6 col-lg-3">
                                         <div class="form-group">
                                             <label>Phase<span class="text-danger">*</span></label>

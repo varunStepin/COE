@@ -32,6 +32,13 @@
 								echo $this->Form->input('type', array("type" => "hidden", "label" => false, 'required', "value" => "insert"));
 								echo $this->Form->input("id", array("type" => "hidden", "label" => false, 'class' => "form-control", "value" => $this->request->data['CifRoundtable']['id'])); ?>
 								<div class="form-group row">
+									<label for="example-text-input" class="col-sm-4 col-form-label">Centre <span class="text-danger">*</span></label>
+									<div class="col-sm-8">
+										<?php
+										  echo $this->Form->input("centre",array("type"=>"select","options"=>AppController::getCentres(),"empty"=>"Select Centre","class"=>"form-control","required","label"=>false))?>
+									</div>
+								</div>
+								<div class="form-group row">
 									<label for="example-text-input" class="col-sm-4 col-form-label">Phase <span class="text-danger">*</span></label>
 									<div class="col-sm-8">
 										<?php
@@ -114,6 +121,7 @@
 								<thead style="font-size:15px; font-weight:bold;">
 									<tr class="bg-info">
 										<th>#</th>
+										<th>Centre</th>
 										<th>Phase</th>
 										<th>Year</th>
 										<th>Event Type</th>
@@ -121,6 +129,7 @@
 										<th>Date</th>
 										<th>Speakers</th>
 										<th>Total No of Participants</th>
+										
 										<!--<th>Month-Year</th>-->
 										<th>Action</th>
 									</tr>
@@ -135,6 +144,7 @@
 									?>
 											<tr>
 												<td><?php echo $i++; ?></td>
+												<td><?php echo $list['CifRoundtable']['centre']; ?></td>
 												<td><?php echo $list['CifRoundtable']['phase']; ?></td>
 												<td><?php echo $list['CifRoundtable']['year']; ?></td>
 												<td><?php echo $list['CifRoundtable']['event_type']; ?></td>
@@ -142,6 +152,7 @@
 												<td class="text-nowrap"><?php echo date('d-m-Y', strtotime($list['CifRoundtable']['date'])); ?></td>
 												<td><?php echo $list['CifRoundtable']['speaker']; ?></td>
 												<td><?php echo $list['CifRoundtable']['no_participant']; ?></td>
+												
 												<!--<td><?php /*echo $list['DsHackathon']['month'] .'-'.  $list['DsHackathon']['year'];*/ ?></td>-->
 												<td>
 													<a href="#" onclick="addIdToForm(<?php echo $id ?>,'delete')"><i style="font-size:12px;" class="glyphicon glyphicon-trash"></i></a>

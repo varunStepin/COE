@@ -8,8 +8,7 @@
             Graduates - Finishing School
         </h1>
         <ol class="breadcrumb">
-            <li class="breadcrumb-item"><i
-                        class="fa fa-dashboard"></i><?php echo $this->Html->link('<span>Home  </span>', array("controller" => "Admin", "action" => "dashboard"), array("escape" => false)); ?>
+            <li class="breadcrumb-item"><i class="fa fa-dashboard"></i><?php echo $this->Html->link('<span>Home  </span>', array("controller" => "Admin", "action" => "dashboard"), array("escape" => false)); ?>
             </li>
             <li class="breadcrumb-item"><a href="#">Animation, Visual Effects</a></li>
             <li class="breadcrumb-item active">Graduates - Finishing School</li>
@@ -21,13 +20,10 @@
 
         <div class="row">
             <div class="col-lg-5 col-12">
-               <div class="p-5 box my-10">
+                <div class="p-5 box my-10">
                     <div>
-                        <a href="<?php echo $this->webroot . 'excel_dounload/graduateSchoolList.xls'; ?>"
-                           target="_blank" class="btn btn-sm btn-outline-danger pull-right">Excel Download <i
-                                    class="fa fa-download"></i> </a>
-                        <a href="javascript:void(0)" class="btn btn-sm btn-outline-success pull-right mr-5"
-                           id="bulkUpload">Excel Upload <i class="fa fa-upload"></i> </a>
+                        <a href="<?php echo $this->webroot . 'excel_dounload/graduateSchoolList.xls'; ?>" target="_blank" class="btn btn-sm btn-outline-danger pull-right">Excel Download <i class="fa fa-download"></i> </a>
+                        <a href="javascript:void(0)" class="btn btn-sm btn-outline-success pull-right mr-5" id="bulkUpload">Excel Upload <i class="fa fa-upload"></i> </a>
 
                         <div style="display: none;">
                             <?php
@@ -63,8 +59,7 @@
                                     </div>
                                 </div>
                                 <div class="form-group row">
-                                    <label for="example-text-input" class="col-sm-4 col-form-label">Batch No<span
-                                                class="text-danger">*</span></label>
+                                    <label for="example-text-input" class="col-sm-4 col-form-label">Batch No<span class="text-danger">*</span></label>
                                     <div class="col-sm-8">
                                         <?php echo $this->Form->input("batch_no", array("type" => "text", "class" => "form-control", "required", "label" => false, "placeholder" => "Batch No")) ?>
 
@@ -78,8 +73,7 @@
                                 </div>
 
                                 <div class="form-group row">
-                                    <label for="example-text-input" class="col-sm-4 col-form-label">Name of the Candidate<span
-                                                class="text-danger">*</span></label>
+                                    <label for="example-text-input" class="col-sm-4 col-form-label">Name of the Candidate<span class="text-danger">*</span></label>
                                     <div class="col-sm-8">
                                         <?php echo $this->Form->input("name_of_the_graduate", array("type" => "text", "class" => "form-control", "required", "label" => false, "placeholder" => "Name of the Candidate")) ?>
 
@@ -87,8 +81,22 @@
                                 </div>
 
                                 <div class="form-group row">
-                                    <label for="example-text-input" class="col-sm-4 col-form-label">Mobile No<span
-                                                class="text-danger">*</span></label>
+                                    <label for="example-text-input" class="col-sm-4 col-form-label">Institute Name<span class="text-danger">*</span></label>
+                                    <div class="col-sm-8">
+                                        <?php echo $this->Form->input("institute_name", array("type" => "text", "class" => "form-control", "required", "label" => false, "placeholder" => "Institute Name")) ?>
+
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label for="example-text-input" class="col-sm-4 col-form-label">Address<span class="text-danger">*</span></label>
+                                    <div class="col-sm-8">
+                                        <?php echo $this->Form->input("address", array("type" => "text", "class" => "form-control", "required", "label" => false, "placeholder" => "Address")) ?>
+
+                                    </div>
+                                </div>
+
+                                <div class="form-group row">
+                                    <label for="example-text-input" class="col-sm-4 col-form-label">Mobile No<span class="text-danger">*</span></label>
                                     <div class="col-sm-8">
                                         <?php echo $this->Form->input("mobile_no", array("type" => "text", "class" => "form-control", "required", "label" => false, "placeholder" => "Mobile No")) ?>
 
@@ -96,8 +104,7 @@
                                 </div>
 
                                 <div class="form-group row">
-                                    <label for="example-text-input" class="col-sm-4 col-form-label">Email<span
-                                                class="text-danger">*</span></label>
+                                    <label for="example-text-input" class="col-sm-4 col-form-label">Email<span class="text-danger">*</span></label>
                                     <div class="col-sm-8">
                                         <?php echo $this->Form->input("email", array("type" => "email", "class" => "form-control", "required", "label" => false, "placeholder" => "Email")) ?>
 
@@ -105,8 +112,7 @@
                                 </div>
 
                                 <div class="form-group row">
-                                    <label for="example-text-input" class="col-sm-4 col-form-label">City<span
-                                                class="text-danger">*</span></label>
+                                    <label for="example-text-input" class="col-sm-4 col-form-label">City<span class="text-danger">*</span></label>
                                     <div class="col-sm-8">
                                         <?php echo $this->Form->input("city", array("type" => "text", "class" => "form-control", "required", "label" => false, "placeholder" => "City")) ?>
 
@@ -115,7 +121,7 @@
                                 <div class="form-group row">
                                     <label for="example-text-input" class="col-sm-4 col-form-label">Phase<span class="text-danger">*</span></label>
                                     <div class="col-sm-8">
-                                        <?php echo $this->Form->input("phase",array("type"=>"select","options"=>['Phase 1'=>'Phase 1','Phase 2'=>'Phase 2'],"empty"=>"Select","class"=>"form-control","required","label"=>false,"placeholder"=>"Venue"))?>
+                                        <?php echo $this->Form->input("phase", array("type" => "select", "options" => ['Phase 1' => 'Phase 1', 'Phase 2' => 'Phase 2'], "empty" => "Select", "class" => "form-control", "required", "label" => false, "placeholder" => "Venue")) ?>
 
                                     </div>
                                 </div>
@@ -151,52 +157,51 @@
                         <div class="table-responsive">
                             <table class="table example_long table-striped table-bordered table-hover">
                                 <thead style="font-size:15px; font-weight:bold;">
-                                <tr class="bg-info">
-                                    <th>#</th>
-                                    <th>Program Name</th>
-                                    <th>Batch No</th>
-                                    <th>Date of Commencement</th>
-                                    <th>Name of the Candidate</th>
-                                    <th>Mobile No</th>
-                                    <th>Email</th>
-                                    <th>City</th>
-                                    <th>Phase</th>
-                                    <th>Action</th>
-                                </tr>
+                                    <tr class="bg-info">
+                                        <th>#</th>
+                                        <th>Program Name</th>
+                                        <th>Batch No</th>
+                                        <th>Date of Commencement</th>
+                                        <th>Name of the Candidate</th>
+                                        <th>Mobile No</th>
+                                        <th>Email</th>
+                                        <th>City</th>
+                                        <th>Phase</th>
+                                        <th>Institute Name</th>
+                                        <th>Address</th>
+                                        <th>Action</th>
+                                    </tr>
                                 </thead>
                                 <tbody>
 
-                                <?php
-                                $i = 1;
-                                if (!empty($manage_list)) {
+                                    <?php
+                                    $i = 1;
+                                    if (!empty($manage_list)) {
 
-                                    foreach ($manage_list as $list) {
-                                        $id = $list['GraduateSchool']['id'];
-                                        ?>
-                                        <tr>
-                                            <td><?php echo $i++; ?></td>
-                                            <td><?php echo $list['GraduateSchool']['graduation_name']; ?></td>
-                                            <td><?php echo $list['GraduateSchool']['batch_no']; ?></td>
-                                            <td><?php echo date('d M Y', strtotime($list['GraduateSchool']['date_of_graduation'])); ?></td>
-                                            <td><?php echo $list['GraduateSchool']['name_of_the_graduate']; ?></td>
-                                            <td><?php echo $list['GraduateSchool']['mobile_no']; ?></td>
-                                            <td><?php echo $list['GraduateSchool']['email']; ?></td>
-                                            <td><?php echo $list['GraduateSchool']['city']; ?></td>
-                                            <td><?php echo $list['GraduateSchool']['phase']; ?></td>
-                                            <td>
-                                                <a href="#" onclick="addIdToForm(<?php echo $id ?>,'delete')"><i
-                                                            style="font-size:12px;"
-                                                            class="glyphicon glyphicon-trash"></i></a>
-                                                <a href="#" onclick="addIdToForm(<?php echo $id ?>,'edit')"><i
-                                                            style="font-size:12px;"
-                                                            class="glyphicon glyphicon-edit"></i></i></a>
+                                        foreach ($manage_list as $list) {
+                                            $id = $list['GraduateSchool']['id'];
+                                    ?>
+                                            <tr>
+                                                <td><?php echo $i++; ?></td>
+                                                <td><?php echo $list['GraduateSchool']['graduation_name']; ?></td>
+                                                <td><?php echo $list['GraduateSchool']['batch_no']; ?></td>
+                                                <td><?php echo date('d M Y', strtotime($list['GraduateSchool']['date_of_graduation'])); ?></td>
+                                                <td><?php echo $list['GraduateSchool']['name_of_the_graduate']; ?></td>
+                                                <td><?php echo $list['GraduateSchool']['mobile_no']; ?></td>
+                                                <td><?php echo $list['GraduateSchool']['email']; ?></td>
+                                                <td><?php echo $list['GraduateSchool']['city']; ?></td>
+                                                <td><?php echo $list['GraduateSchool']['phase']; ?></td>
+                                                <td><?php echo $list['GraduateSchool']['institute_name']; ?></td>
+                                                <td><?php echo $list['GraduateSchool']['address']; ?></td>
+                                                <td>
+                                                    <a href="#" onclick="addIdToForm(<?php echo $id ?>,'delete')"><i style="font-size:12px;" class="glyphicon glyphicon-trash"></i></a>
+                                                    <a href="#" onclick="addIdToForm(<?php echo $id ?>,'edit')"><i style="font-size:12px;" class="glyphicon glyphicon-edit"></i></i></a>
 
 
-                                            </td>
-                                        </tr>
+                                                </td>
+                                            </tr>
                                     <?php }
-
-                                } ?>
+                                    } ?>
                                 </tbody>
                             </table>
                         </div>
@@ -232,11 +237,11 @@ echo $this->Form->end();
     }
 </script>
 <script>
-    $('#bulkUpload').on('click',function () {
+    $('#bulkUpload').on('click', function() {
         $('#excel_file').click();
     });
 
-    $('#excel_file').on('change',function () {
+    $('#excel_file').on('change', function() {
         $('#excel_import_form').submit();
     });
     $('.graduates_school').addClass('active').parents('li').addClass('active');

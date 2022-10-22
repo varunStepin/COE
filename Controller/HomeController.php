@@ -44,9 +44,9 @@ class HomeController extends AppController {
 
 
 
-    public $uses = array('InternshipFoundationCourse','AdvanceProjectBasedCourse','OrientationAwarenessCourse','UserDetail','Mentor','InvestorConnect','Sector','MarketResearch','Hackathon', 'DsReportPublished','LiasoningDept','EnrolledTrainer','TraineeSecuredJob','SolutionSupport','DeptFollowup','Trainee','ManageTraining','ManageAttendees','ManageSkill','ManageWorking','ManageSkillAttendee','ManageWorkingAttendee','ManageResearchProject','ManageResearchProjectIndustry','ManageAerospaceTraining','ResearchProjectTeam','ResearchProjectIndustryTeam','AerospaceStudent','ManageFacility','ManageInternshipPool','ManageStartup','ManageWhitePaper','ManageCyberSecurity','InternshipPoolIntern','ManageCapacityBuilding','ManageAgricultureInnovation','IotResearchIncubation','GeneratedEmployment','WhitePaper','Poc','SocietalProject',   'ManageIotStudentDetail','ManageIotCurriculum','ManageIntellectualProperty','ManageCapacityStudentDetail','ManageCapacityBuilding','Budget','Target',
-        'ManageAerospaceDefenseTraining','AerospaceDefenseEmbeddedCourse','AerospaceDefenseTrainingProcess','AerospaceDefenseBootcamp','ManageEmbeddedCourseAttendee','ManageTrainingProcessAttendee','ManageBootcampAttendee','AerospaceDefenseSkilling','ManageSkillingAttendee' ,'AerospaceDefenseCourse','ManageCoursesAttendee','ManageStartupFacilitation',
-        'Financial','Expenditure','ManageProblemStatement','ManageProblemStatementDetail','GraduateSchool'
+   public $uses = array('FinancialYear','StarterCourse', 'InternshipFoundationCourse', 'AdvanceProjectBasedCourse', 'OrientationAwarenessCourse', 'UserDetail', 'Mentor', 'InvestorConnect', 'Sector', 'MarketResearch', 'Hackathon', 'DsReportPublished', 'LiasoningDept', 'EnrolledTrainer', 'TraineeSecuredJob', 'SolutionSupport', 'DeptFollowup', 'Trainee', 'ManageTraining', 'ManageAttendees', 'ManageSkill', 'ManageWorking', 'ManageSkillAttendee', 'ManageWorkingAttendee', 'ManageResearchProject', 'ManageResearchProjectIndustry', 'ManageAerospaceTraining', 'ResearchProjectTeam', 'ResearchProjectIndustryTeam', 'AerospaceStudent', 'ManageFacility', 'ManageInternshipPool', 'ManageStartup', 'ManageWhitePaper', 'ManageCyberSecurity', 'InternshipPoolIntern', 'ManageCapacityBuilding', 'ManageAgricultureInnovation', 'IotResearchIncubation', 'GeneratedEmployment', 'WhitePaper', 'Poc', 'SocietalProject',   'ManageIotStudentDetail', 'ManageIotCurriculum', 'ManageIntellectualProperty', 'ManageCapacityStudentDetail', 'ManageCapacityBuilding', 'Budget', 'Target',
+        'ManageAerospaceDefenseTraining', 'AerospaceDefenseValueStreamCourse','AerospaceDefenseDroneTechnology','AerospaceDefenseEmbeddedCourse', 'AerospaceDefenseTrainingProcess', 'AerospaceDefenseBootcamp', 'ManageEmbeddedCourseAttendee', 'ManageTrainingProcessAttendee', 'ManageBootcampAttendee', 'AerospaceDefenseSkilling', 'ManageSkillingAttendee', 'AerospaceDefenseCourse', 'ManageCoursesAttendee', 'ManageStartupFacilitation',
+        'Financial', 'Expenditure', 'ManageProblemStatement', 'ManageProblemStatementDetail', 'GraduateSchool','ManageDroneTechnologyAttendee','ManageValueStreamCourseAttendee'
     );
     public $helpers = array('Html', 'Form', 'Js','Session');
     public $components = array('RequestHandler', 'Email');
@@ -82,7 +82,9 @@ class HomeController extends AppController {
         $this->getUserTypes();
         //print_r($this->request->data);
         if(!empty($this->request->data)) {
-
+            
+            $this->request->data['UserDetail']['password'] = $this->encrypt_decrypt("encrypt",$this->request->data['UserDetail']['password']);
+           
             /*$this->request->data['UserDetail']['username'] = $this->request->data['UserDetail']['username'];
 
             print_r($this->request->data['UserDetail']);
@@ -104,7 +106,7 @@ class HomeController extends AppController {
                         "UserDetail.password"=>$this->request->data['UserDetail']['password']
                     ),
                     "fields"=>array('id','user_id','firstname','lastname','user_type','profile_image','email','college_detail_id','password')));
-                // print_r($users); return;
+                 
                 if(!empty($users)) {
 
                     $this->Session->write('UserSession', session_id());
@@ -121,7 +123,9 @@ class HomeController extends AppController {
                     $this->Session->write('USER_EMAIL', $users['UserDetail']['email']);
                     $this->Session->write('USER_PROFILE', $users['UserDetail']['profile_image']);
                     $this->Session->write('Phase', "Phase 1");
-
+                    $this->Session->write('Centre', "Belgavi");
+                    $current_financial_year = $this->FinancialYear->find('first',array('conditions'=>array('FinancialYear.current'=>1)));
+                    $this->Session->write('TBIYear', $current_financial_year['FinancialYear']['id']);
                     if($users['UserDetail']['user_type']=='Admin'){
                         $this->Session->write('USER_NAME', $users['UserDetail']['firstname']);
                         $this->redirect(array("controller"=>"Admin","action"=>"dashboard"));
@@ -167,6 +171,7 @@ class HomeController extends AppController {
             {
                 $this->UserDetail->id = $this->Session->read('USER_ID');
                 $password= $this->encrypt_decrypt("encrypt",$this->request->data['UserDetail']['password']);
+                //$password= $this->request->data['UserDetail']['password'];
                 $this->request->data['UserDetail']['password'] = $password ;
                 $this->UserDetail->saveField('password', $this->request->data['UserDetail']['password']);
                 $this->Session->setFlash("<div class='notify-alert alert alert-success col-xl-3 col-lg-3 col-md-3 col-12 animated fadeInDown' id='php-alert'>
@@ -4566,6 +4571,8 @@ public function financial($id=null){
                             'email'=>           ($getData[5]!='')?$getData[5]:'',
                             'city'=>           ($getData[6]!='')?$getData[6]:'',
                             'phase'=>			($getData[7]!='')?$getData[7]:'',
+                            'address' => ($getData[8] != '') ? $getData[8] : '',
+                            'institute_name' => ($getData[9] != '') ? $getData[9] : '',
 							'month'=>			($month!='')?$month:'',
 							'year'=>			($year!='')?$year:''
                         ));
@@ -4665,5 +4672,346 @@ public function revenueGenerated($linktype=null)
         $this->set('table_list',$table_list);
         $this->set('details',$details);
         $this->changeCSRFToken();
+    }
+    public function setFundingYear()
+    {
+            $this->Session->write('TBIYear', $this->request['data']['tbi_year']);
+            exit();
+    }
+     public function starterCourse($id = null)
+    {
+        $this->layout = 'fab_layout';
+        $this->_userSessionCheckout();
+        $this->getYear();
+        $this->getMonth();
+        Configure::write('debug', 0);
+
+        if (!empty($this->request->data)) {
+            if ($this->request->data['StarterCourse']['csrf_token'] != $this->Session->read('CSRFTOKEN')) {
+                $this->Session->setFlash("<div id='php-alert' class='alert alert-dismissible alert-danger'><span class='glyphicon glyphicon-remove-circle'></span><button type='button' class='close' data-dismiss='alert' aria-label='Close'><span aria-hidden='true' style='color:black;'>&times;</span></button> Unauthorized access. Please try again.</div>");
+                $this->redirect(array('action' => 'starterCourse'));
+            }
+        }
+
+        if ($this->request->data['StarterCourse']['type'] == "edit") {
+            $this->request->data = $this->StarterCourse->read(null, $this->request->data['StarterCourse']['id']);
+        } else if ($this->request->data['StarterCourse']['type'] == "delete") {
+            $id = $this->request->data['StarterCourse']['id'];
+
+            if ($this->StarterCourse->delete($id)) {
+                $this->Session->setFlash("<div id='php-alert' class='alert alert-dismissible alert-danger'><span class='glyphicon glyphicon-remove-circle'></span><button type='button' class='close' data-dismiss='alert' aria-label='Close'><span aria-hidden='true' style='color:black;'>&times;</span></button>  Data have been deleted Successfully.</div>");
+
+                $this->redirect(array('action' => 'starterCourse'));
+            } else {
+                $this->Session->setFlash("<div id='php-alert' class='alert alert-dismissible alert-danger'><span class='glyphicon glyphicon-remove-circle'></span><button type='button' class='close' data-dismiss='alert' aria-label='Close'><span aria-hidden='true' style='color:black;'>&times;</span></button>  Delete Failed.Please try again.</div>");
+
+                $this->redirect(array('action' => 'starterCourse'));
+            }
+        } else if ($this->request->data['StarterCourse']['type'] == "insert") {
+
+            if ($this->request->data['StarterCourse']['id']) {
+                $message = "Updated Successfully";
+            } else {
+                $message = "Added Successfully";
+            }
+
+            $this->request->data['StarterCourse']['start_date'] = date('d-m-Y', strtotime($this->request->data['StarterCourse']['start_date']));
+            $this->request->data['StarterCourse']['end_date'] = date('d-m-Y', strtotime($this->request->data['StarterCourse']['end_date']));
+            $details = explode('-', $this->request->data['bday-month']);
+
+            if ($details[1] == 1) {
+                $details[1] = "January";
+            } elseif ($details[1] == 2) {
+                $details[1] = "February";
+            } elseif ($details[1] == 3) {
+                $details[1] = "March";
+            } elseif ($details[1] == 4) {
+                $details[1] = "April";
+            } elseif ($details[1] == 5) {
+                $details[1] = "May";
+            } elseif ($details[1] == 6) {
+                $details[1] = "June";
+            } elseif ($details[1] == 7) {
+                $details[1] = "July";
+            } elseif ($details[1] == 8) {
+                $details[1] = "August";
+            } elseif ($details[1] == 9) {
+                $details[1] = "September";
+            } elseif ($details[1] == 10) {
+                $details[1] = "October";
+            } elseif ($details[1] == 11) {
+                $details[1] = "November";
+            } elseif ($details[1] == 12) {
+                $details[1] = "December";
+            }
+
+            $monthYear = explode('-', $this->request->data['StarterCourse']['start_date']);
+            $this->request->data['StarterCourse']['month'] = date('F', mktime(0, 0, 0, $monthYear[1], 10));
+            $this->request->data['StarterCourse']['year'] = $monthYear[2];
+
+            $this->StarterCourse->save($this->request->data);
+            $this->Session->setFlash("<div id='php-alert' class='alert alert-dismissible alert-success'><span class='glyphicon glyphicon-remove-circle'></span><button type='button' class='close' data-dismiss='alert' aria-label='Close'><span aria-hidden='true' style='color:black;'>&times;</span></button>" . $message . ".</div>");
+            $this->redirect(array('action' => 'starterCourse'));
+        }
+
+        $manage_list = $this->StarterCourse->find('all', array('order' => array('StarterCourse.id DESC')));
+        $this->set('manage_list', $manage_list);
+        $this->changeCSRFToken();
+    }
+
+    public function manageStarterCourseList($id = null)
+    {
+        $this->layout = 'fab_layout';
+        $this->_userSessionCheckout();
+        Configure::write('debug', 1);
+
+        if ($this->request->data['StarterCourse']['type'] == "delete") {
+            $id = $this->request->data['StarterCourse']['id'];
+
+            if ($this->StarterCourse->delete($id)) {
+                $this->Session->setFlash("<div id='php-alert' class='alert alert-dismissible alert-danger'><span class='glyphicon glyphicon-remove-circle'></span><button type='button' class='close' data-dismiss='alert' aria-label='Close'><span aria-hidden='true' style='color:black;'>&times;</span></button> Data has been deleted Successfully.</div>");
+
+                $this->redirect(array('action' => 'manageStarterCourseList'));
+            } else {
+                $this->Session->setFlash("<div id='php-alert' class='alert alert-dismissible alert-danger'><span class='glyphicon glyphicon-remove-circle'></span><button type='button' class='close' data-dismiss='alert' aria-label='Close'><span aria-hidden='true' style='color:black;'>&times;</span></button>Failed to delete.Please try again.</div>");
+
+                $this->redirect(array('action' => 'manageStarterCourseList'));
+            }
+        } else {
+            $manage_list = $this->StarterCourse->find('all', array('order' => array('StarterCourse.id DESC')));
+            $this->set('manage_list', $manage_list);
+        }
+    }
+
+    public function aerospaceDefenseDroneTechnology($id = null)
+    {
+        $this->layout = 'fab_layout';
+        $this->_userSessionCheckout();
+        $this->getYear();
+        $this->getMonth();
+
+
+        if (!empty($this->request->data)) {
+            if ($this->request->data['AerospaceDefenseDroneTechnology']['csrf_token'] != $this->Session->read('CSRFTOKEN')) {
+                $this->Session->setFlash("<div id='php-alert' class='alert alert-dismissible alert-danger'><span class='glyphicon glyphicon-remove-circle'></span><button type='button' class='close' data-dismiss='alert' aria-label='Close'><span aria-hidden='true' style='color:black;'>&times;</span></button> Unauthorized access. Please try again.</div>");
+                $this->redirect(array('action' => 'aerospaceDefenseDroneTechnology'));
+            }
+        }
+
+        if ($this->request->data['AerospaceDefenseDroneTechnology']['type'] == "edit") {
+            $this->request->data = $this->AerospaceDefenseDroneTechnology->read(null, $this->request->data['AerospaceDefenseDroneTechnology']['id']);
+        } else if ($this->request->data['AerospaceDefenseDroneTechnology']['type'] == "delete") {
+            $id = $this->request->data['AerospaceDefenseDroneTechnology']['id'];
+
+            if ($this->AerospaceDefenseDroneTechnology->delete($id)) {
+                $this->Session->setFlash("<div id='php-alert' class='alert alert-dismissible alert-danger'><span class='glyphicon glyphicon-remove-circle'></span><button type='button' class='close' data-dismiss='alert' aria-label='Close'><span aria-hidden='true' style='color:black;'>&times;</span></button>  Data have been deleted Successfully.</div>");
+
+                $this->redirect(array('action' => 'aerospaceDefenseDroneTechnology'));
+            } else {
+                $this->Session->setFlash("<div id='php-alert' class='alert alert-dismissible alert-danger'><span class='glyphicon glyphicon-remove-circle'></span><button type='button' class='close' data-dismiss='alert' aria-label='Close'><span aria-hidden='true' style='color:black;'>&times;</span></button>  Delete Failed.Please try again.</div>");
+
+                $this->redirect(array('action' => 'aerospaceDefenseDroneTechnology'));
+            }
+        } else if ($this->request->data['AerospaceDefenseDroneTechnology']['type'] == "insert") {
+          
+            if ($this->request->data['AerospaceDefenseDroneTechnology']['id']) {
+                $message = "Updated Successfully";
+            } else {
+                $message = "Added Successfully";
+            }
+            $monthYear = explode('-', $this->request->data['AerospaceDefenseDroneTechnology']['start_date']);
+            $this->request->data['AerospaceDefenseDroneTechnology']['month'] = date('F', mktime(0, 0, 0, $monthYear[1], 10));
+            $this->request->data['AerospaceDefenseDroneTechnology']['year'] = $monthYear[2];
+           
+            $this->AerospaceDefenseDroneTechnology->save($this->request->data);
+            $this->Session->setFlash("<div id='php-alert' class='alert alert-dismissible alert-success'><span class='glyphicon glyphicon-remove-circle'></span><button type='button' class='close' data-dismiss='alert' aria-label='Close'><span aria-hidden='true' style='color:black;'>&times;</span></button>" . $message . ".</div>");
+            $this->redirect(array('action' => 'aerospaceDefenseDroneTechnology'));
+        }
+
+        $manage_list = $this->AerospaceDefenseDroneTechnology->find('all', array('order' => array('AerospaceDefenseDroneTechnology.id DESC')));
+        $this->set('manage_list', $manage_list);
+        $this->changeCSRFToken();
+    }
+
+    public function aerospaceDefenseValueStreamCourse($id = null)
+    {
+        $this->layout = 'fab_layout';
+        $this->_userSessionCheckout();
+        $this->getYear();
+        $this->getMonth();
+
+
+        if (!empty($this->request->data)) {
+            if ($this->request->data['AerospaceDefenseValueStreamCourse']['csrf_token'] != $this->Session->read('CSRFTOKEN')) {
+                $this->Session->setFlash("<div id='php-alert' class='alert alert-dismissible alert-danger'><span class='glyphicon glyphicon-remove-circle'></span><button type='button' class='close' data-dismiss='alert' aria-label='Close'><span aria-hidden='true' style='color:black;'>&times;</span></button> Unauthorized access. Please try again.</div>");
+                $this->redirect(array('action' => 'aerospaceDefenseValueStreamCourse'));
+            }
+        }
+
+        if ($this->request->data['AerospaceDefenseValueStreamCourse']['type'] == "edit") {
+            $this->request->data = $this->AerospaceDefenseValueStreamCourse->read(null, $this->request->data['AerospaceDefenseValueStreamCourse']['id']);
+        } else if ($this->request->data['AerospaceDefenseValueStreamCourse']['type'] == "delete") {
+            $id = $this->request->data['AerospaceDefenseValueStreamCourse']['id'];
+
+            if ($this->AerospaceDefenseValueStreamCourse->delete($id)) {
+                $this->Session->setFlash("<div id='php-alert' class='alert alert-dismissible alert-danger'><span class='glyphicon glyphicon-remove-circle'></span><button type='button' class='close' data-dismiss='alert' aria-label='Close'><span aria-hidden='true' style='color:black;'>&times;</span></button>  Data have been deleted Successfully.</div>");
+
+                $this->redirect(array('action' => 'aerospaceDefenseValueStreamCourse'));
+            } else {
+                $this->Session->setFlash("<div id='php-alert' class='alert alert-dismissible alert-danger'><span class='glyphicon glyphicon-remove-circle'></span><button type='button' class='close' data-dismiss='alert' aria-label='Close'><span aria-hidden='true' style='color:black;'>&times;</span></button>  Delete Failed.Please try again.</div>");
+
+                $this->redirect(array('action' => 'aerospaceDefenseValueStreamCourse'));
+            }
+        } else if ($this->request->data['AerospaceDefenseValueStreamCourse']['type'] == "insert") {
+            
+            if ($this->request->data['AerospaceDefenseValueStreamCourse']['id']) {
+                $message = "Updated Successfully";
+            } else {
+                $message = "Added Successfully";
+            }
+            $monthYear = explode('-', $this->request->data['AerospaceDefenseValueStreamCourse']['start_date']);
+            $this->request->data['AerospaceDefenseValueStreamCourse']['month'] = date('F', mktime(0, 0, 0, $monthYear[1], 10));
+            $this->request->data['AerospaceDefenseValueStreamCourse']['year'] = $monthYear[2];
+          
+
+            $this->AerospaceDefenseValueStreamCourse->save($this->request->data);
+            $this->Session->setFlash("<div id='php-alert' class='alert alert-dismissible alert-success'><span class='glyphicon glyphicon-remove-circle'></span><button type='button' class='close' data-dismiss='alert' aria-label='Close'><span aria-hidden='true' style='color:black;'>&times;</span></button>" . $message . ".</div>");
+            $this->redirect(array('action' => 'aerospaceDefenseValueStreamCourse'));
+        }
+
+        $manage_list = $this->AerospaceDefenseValueStreamCourse->find('all', array('order' => array('AerospaceDefenseValueStreamCourse.id DESC')));
+        $this->set('manage_list', $manage_list);
+        $this->changeCSRFToken();
+    }
+
+    public function droneTechnologiesAttendees($id = null)
+    {
+        $this->layout = 'fab_layout';
+        $this->_userSessionCheckout();
+        $this->getYear();
+        $this->getMonth();
+        $this->getDroneTechnologyCourse();
+
+
+
+        if ($this->request->data['ManageDroneTechnologyAttendee']['type'] == "insert") {
+            $attendee_name = $this->request->data['attendee_name'];
+            for ($i = 0; $i < count($attendee_name); $i++) {
+                $data = array(
+                    "ManageDroneTechnologyAttendee" => array(
+                        "aerospace_defense_drone_technology_id" => $this->request->data['ManageDroneTechnologyAttendee']['aerospace_defense_drone_technology_id'],
+                        "attendee_name" => $this->request->data['attendee_name'][$i],
+                        "gender" => $this->request->data['gender'][$i],
+                        "contact_number" => $this->request->data['contact_number'][$i],
+                        "email_id" => $this->request->data['email_id'][$i],
+                        "institute_name" => $this->request->data['institute_name'][$i],
+                        "year" => $this->request->data['year'][$i],
+                        "month" => $this->request->data['month'][$i]
+                    )
+                );
+                $this->ManageDroneTechnologyAttendee->saveAll($data);
+            }
+            $message = "Attendees Added Successfully";
+
+            $this->Session->setFlash("<div id='php-alert' class='alert alert-dismissible alert-success'><span class='glyphicon glyphicon-remove-circle'></span><button type='button' class='close' data-dismiss='alert' aria-label='Close'><span aria-hidden='true' style='color:black;'>&times;</span></button>" . $message . ".</div>");
+            $this->redirect(array('action' => 'droneTechnologiesAttendees'));
+        } elseif ($this->request->data['ManageDroneTechnologyAttendee']['csrf_token'] != "") {
+            if ($this->request->data['ManageDroneTechnologyAttendee']['csrf_token'] != $this->Session->read('CSRFTOKEN')) {
+                $this->Session->setFlash("<div id='php-alert' class='alert alert-dismissible alert-danger'><span class='glyphicon glyphicon-remove-circle'></span><button type='button' class='close' data-dismiss='alert' aria-label='Close'><span aria-hidden='true' style='color:black;'>&times;</span></button> Unauthorized access. Please try again.</div>");
+                $this->redirect(array('action' => 'droneTechnologiesAttendees'));
+            }
+        }
+        $this->changeCSRFToken();
+    }
+
+    public function manageDroneTechnologyAttendeesList($id = null)
+    {
+        $this->layout = 'fab_layout';
+        $this->_userSessionCheckout();
+
+
+        if ($this->request->data['ManageDroneTechnologyAttendee']['type'] == "delete") {
+            $id = $this->request->data['ManageDroneTechnologyAttendee']['id'];
+
+            if ($this->ManageDroneTechnologyAttendee->delete($id)) {
+                $this->Session->setFlash("<div id='php-alert' class='alert alert-dismissible alert-danger'><span class='glyphicon glyphicon-remove-circle'></span><button type='button' class='close' data-dismiss='alert' aria-label='Close'><span aria-hidden='true' style='color:black;'>&times;</span></button> Data has been deleted Successfully.</div>");
+                $this->redirect(array('action' => 'manageDroneTechnologyAttendeesList'));
+            } else {
+                $this->Session->setFlash("<div id='php-alert' class='alert alert-dismissible alert-danger'><span class='glyphicon glyphicon-remove-circle'></span><button type='button' class='close' data-dismiss='alert' aria-label='Close'><span aria-hidden='true' style='color:black;'>&times;</span></button>Failed to delete.Please try again.</div>");
+                $this->redirect(array('action' => 'manageDroneTechnologyAttendeesList'));
+            }
+        } else {
+            $this->ManageDroneTechnologyAttendee->bindModel(array('belongsTo' => array('AerospaceDefenseDroneTechnology')));
+            $manage_list = $this->ManageDroneTechnologyAttendee->find('all', array('order' => array('ManageDroneTechnologyAttendee.id DESC')));
+            $this->set('manage_list', $manage_list);
+        }
+    }
+
+    public function valueStreamCourseAttendees($id = null)
+    {
+        $this->layout = 'fab_layout';
+        $this->_userSessionCheckout();
+        $this->getYear();
+        $this->getMonth();
+        $this->getValueStreamCourse();
+
+
+
+        if ($this->request->data['ManageValueStreamCourseAttendee']['type'] == "insert") {
+            $attendee_name = $this->request->data['attendee_name'];
+            for ($i = 0; $i < count($attendee_name); $i++) {
+                $data = array(
+                    "ManageValueStreamCourseAttendee" => array(
+                        "aerospace_defense_value_stream_course_id" => $this->request->data['ManageValueStreamCourseAttendee']['aerospace_defense_value_stream_course_id'],
+                        "attendee_name" => $this->request->data['attendee_name'][$i],
+                        "gender" => $this->request->data['gender'][$i],
+                        "contact_number" => $this->request->data['contact_number'][$i],
+                        "email_id" => $this->request->data['email_id'][$i],
+                        "institute_name" => $this->request->data['institute_name'][$i],
+                        "year" => $this->request->data['year'][$i],
+                        "month" => $this->request->data['month'][$i]
+                    )
+                );
+                $this->ManageValueStreamCourseAttendee->saveAll($data);
+            }
+            $message = "Attendees Added Successfully";
+
+            $this->Session->setFlash("<div id='php-alert' class='alert alert-dismissible alert-success'><span class='glyphicon glyphicon-remove-circle'></span><button type='button' class='close' data-dismiss='alert' aria-label='Close'><span aria-hidden='true' style='color:black;'>&times;</span></button>" . $message . ".</div>");
+            $this->redirect(array('action' => 'valueStreamCourseAttendees'));
+        } elseif ($this->request->data['ManageValueStreamCourseAttendee']['csrf_token'] != "") {
+            if ($this->request->data['ManageValueStreamCourseAttendee']['csrf_token'] != $this->Session->read('CSRFTOKEN')) {
+                $this->Session->setFlash("<div id='php-alert' class='alert alert-dismissible alert-danger'><span class='glyphicon glyphicon-remove-circle'></span><button type='button' class='close' data-dismiss='alert' aria-label='Close'><span aria-hidden='true' style='color:black;'>&times;</span></button> Unauthorized access. Please try again.</div>");
+                $this->redirect(array('action' => 'valueStreamCourseAttendees'));
+            }
+        }
+        $this->changeCSRFToken();
+    }
+
+    public function manageValueStreamCourseAttendeesList($id = null)
+    {
+        $this->layout = 'fab_layout';
+        $this->_userSessionCheckout();
+
+
+        if ($this->request->data['ManageValueStreamCourseAttendee']['type'] == "delete") {
+            $id = $this->request->data['ManageValueStreamCourseAttendee']['id'];
+
+            if ($this->ManageValueStreamCourseAttendee->delete($id)) {
+                $this->Session->setFlash("<div id='php-alert' class='alert alert-dismissible alert-danger'><span class='glyphicon glyphicon-remove-circle'></span><button type='button' class='close' data-dismiss='alert' aria-label='Close'><span aria-hidden='true' style='color:black;'>&times;</span></button> Data has been deleted Successfully.</div>");
+                $this->redirect(array('action' => 'manageValueStreamCourseAttendee'));
+            } else {
+                $this->Session->setFlash("<div id='php-alert' class='alert alert-dismissible alert-danger'><span class='glyphicon glyphicon-remove-circle'></span><button type='button' class='close' data-dismiss='alert' aria-label='Close'><span aria-hidden='true' style='color:black;'>&times;</span></button>Failed to delete.Please try again.</div>");
+                $this->redirect(array('action' => 'manageValueStreamCourseAttendee'));
+            }
+        } else {
+            $this->ManageValueStreamCourseAttendee->bindModel(array('belongsTo' => array('AerospaceDefenseValueStreamCourse')));
+            $manage_list = $this->ManageValueStreamCourseAttendee->find('all', array('order' => array('ManageValueStreamCourseAttendee.id DESC')));
+            $this->set('manage_list', $manage_list);
+        }
+    }
+    public function setCentre()
+    {
+        $this->Session->write('Centre', $this->request['data']['centre']);
+        exit();
     }
 }

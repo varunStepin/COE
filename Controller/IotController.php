@@ -602,7 +602,6 @@ class IotController extends AppController {
                             'geography'         =>     ($getData[2]!='')?$getData[2]:'',
                             'appl_patent_no'    =>     ($getData[3]!='')?$getData[3]:'',
                             'title'             =>     ($getData[4]!='')?$getData[4]:'',
-                            'phase'=>     ($getData[5]!='')?$getData[5]:'',
                             'month'             =>     'Jan',
                             'year'              =>     '2020',
                         ));
@@ -1542,4 +1541,653 @@ class IotController extends AppController {
 		$data_list = $this->IotOtherProgram->find('all', ['order' => ['id DESC']]);
 		$this->set('data_list', $data_list);
 	}
+	public function investorConnect($id = null)
+    {
+        $this->layout = 'fab_layout';
+        $this->getStartUps();
+
+        $this->_userSessionCheckout();
+        $this->loadModel('IotInvestorConnect');
+
+        if (!empty($this->request->data)) {
+            if ($this->request->data['IotInvestorConnect']['csrf_token'] != $this->Session->read('CSRFTOKEN')) {
+                $this->Session->setFlash("<div id='php-alert' class='alert alert-dismissible alert-success'><span class='glyphicon glyphicon-remove-circle'></span><button type='button' class='close' data-dismiss='alert' aria-label='Close'><span aria-hidden='true' style='color:black;'>&times;</span></button> Unauthorized access. Please try again.</div>");
+                $this->redirect(array('action' => 'investorConnect'));
+            }
+        }
+        if ($this->request->data['IotInvestorConnect']['type'] == "edit") {
+            $this->request->data = $this->IotInvestorConnect->read(null, $this->request->data['IotInvestorConnect']['id']);
+            $this->request->data['IotInvestorConnect']['month'] = $this->request->data['IotInvestorConnect']['month'] . '-' . $this->request->data['IotInvestorConnect']['year'];
+        } else if ($this->request->data['IotInvestorConnect']['type'] == "delete") {
+            $investor_id = $this->request->data['IotInvestorConnect']['id'];
+
+            if ($this->IotInvestorConnect->delete($investor_id)) {
+                $this->Session->setFlash("<div id='php-alert' class='alert alert-dismissible alert-danger'><span class='glyphicon glyphicon-remove-circle'></span><button type='button' class='close' data-dismiss='alert' aria-label='Close'><span aria-hidden='true' style='color:black;'>&times;</span></button> Data has been deleted Successfully.</div>");
+
+                $this->redirect(array('action' => 'investorConnect'));
+            } else {
+                $this->Session->setFlash("<div id='php-alert' class='alert alert-dismissible alert-danger'><span class='glyphicon glyphicon-remove-circle'></span><button type='button' class='close' data-dismiss='alert' aria-label='Close'><span aria-hidden='true' style='color:black;'>&times;</span></button>Failed to delete.Please try again.</div>");
+
+                $this->redirect(array('action' => 'investorConnect'));
+            }
+        } else if ($this->request->data['IotInvestorConnect']['type'] == "insert") {
+
+            $monthYear = explode('-', $this->request->data['IotInvestorConnect']['month']);
+            $this->request->data['IotInvestorConnect']['month'] = $monthYear[0];
+            $this->request->data['IotInvestorConnect']['year'] = $monthYear[1];
+
+
+            if ($this->request->data['IotInvestorConnect']['id']) {
+                $message = "Updated Successfully";
+            } else {
+                $message = "Added Successfully";
+            }
+            $this->request->data['IotInvestorConnect']['type'] = 'Investor Connect';
+            $this->IotInvestorConnect->save($this->request->data);
+            $this->Session->setFlash("<div id='php-alert' class='alert alert-dismissible alert-success'><span class='glyphicon glyphicon-remove-circle'></span><button type='button' class='close' data-dismiss='alert' aria-label='Close'><span aria-hidden='true' style='color:black;'>&times;</span></button> " . $message . ".</div>");
+            $this->redirect(array('action' => 'investorConnect'));
+        }
+        $this->IotInvestorConnect->bindModel(array('belongsTo' => array("IotStartUp")));
+        $manage_list = $this->IotInvestorConnect->find('all', array("order" => array('IotInvestorConnect.id DESC')));
+        $this->set('table_list', $manage_list);
+
+        $this->changeCSRFToken();
+    }
+
+    public function demoDays($id = null)
+    {
+        $this->layout = 'fab_layout';
+        $this->getStartUps();
+
+        $this->_userSessionCheckout();
+        $this->loadModel('IotInvestorConnect');
+
+        if (!empty($this->request->data)) {
+            if ($this->request->data['IotInvestorConnect']['csrf_token'] != $this->Session->read('CSRFTOKEN')) {
+                $this->Session->setFlash("<div id='php-alert' class='alert alert-dismissible alert-success'><span class='glyphicon glyphicon-remove-circle'></span><button type='button' class='close' data-dismiss='alert' aria-label='Close'><span aria-hidden='true' style='color:black;'>&times;</span></button> Unauthorized access. Please try again.</div>");
+                $this->redirect(array('action' => 'demoDays'));
+            }
+        }
+        if ($this->request->data['IotInvestorConnect']['type'] == "edit") {
+            $this->request->data = $this->IotInvestorConnect->read(null, $this->request->data['IotInvestorConnect']['id']);
+            $this->request->data['IotInvestorConnect']['month'] = $this->request->data['IotInvestorConnect']['month'] . '-' . $this->request->data['IotInvestorConnect']['year'];
+        } else if ($this->request->data['IotInvestorConnect']['type'] == "delete") {
+            $investor_id = $this->request->data['IotInvestorConnect']['id'];
+
+            if ($this->IotInvestorConnect->delete($investor_id)) {
+                $this->Session->setFlash("<div id='php-alert' class='alert alert-dismissible alert-danger'><span class='glyphicon glyphicon-remove-circle'></span><button type='button' class='close' data-dismiss='alert' aria-label='Close'><span aria-hidden='true' style='color:black;'>&times;</span></button> Data has been deleted Successfully.</div>");
+
+                $this->redirect(array('action' => 'demoDays'));
+            } else {
+                $this->Session->setFlash("<div id='php-alert' class='alert alert-dismissible alert-danger'><span class='glyphicon glyphicon-remove-circle'></span><button type='button' class='close' data-dismiss='alert' aria-label='Close'><span aria-hidden='true' style='color:black;'>&times;</span></button>Failed to delete.Please try again.</div>");
+
+                $this->redirect(array('action' => 'demoDays'));
+            }
+        } else if ($this->request->data['IotInvestorConnect']['type'] == "insert") {
+
+            $monthYear = explode('-', $this->request->data['IotInvestorConnect']['month']);
+            $this->request->data['IotInvestorConnect']['month'] = $monthYear[0];
+            $this->request->data['IotInvestorConnect']['year'] = $monthYear[1];
+
+
+            if ($this->request->data['IotInvestorConnect']['id']) {
+                $message = "Updated Successfully";
+            } else {
+                $message = "Added Successfully";
+            }
+            $this->request->data['IotInvestorConnect']['type'] = 'Demo Days';
+            $this->IotInvestorConnect->save($this->request->data);
+            $this->Session->setFlash("<div id='php-alert' class='alert alert-dismissible alert-success'><span class='glyphicon glyphicon-remove-circle'></span><button type='button' class='close' data-dismiss='alert' aria-label='Close'><span aria-hidden='true' style='color:black;'>&times;</span></button> " . $message . ".</div>");
+            $this->redirect(array('action' => 'demoDays'));
+        }
+        $this->IotInvestorConnect->bindModel(array('belongsTo' => array("IotStartUp")));
+        $manage_list = $this->IotInvestorConnect->find('all', array("order" => array('IotInvestorConnect.id DESC')));
+        $this->set('table_list', $manage_list);
+
+        $this->changeCSRFToken();
+    }
+
+    public function startupShowcase($id = null)
+    {
+        $this->layout = 'fab_layout';
+        $this->getStartUps();
+
+        $this->_userSessionCheckout();
+        $this->loadModel('IotInvestorConnect');
+
+        if (!empty($this->request->data)) {
+            if ($this->request->data['IotInvestorConnect']['csrf_token'] != $this->Session->read('CSRFTOKEN')) {
+                $this->Session->setFlash("<div id='php-alert' class='alert alert-dismissible alert-success'><span class='glyphicon glyphicon-remove-circle'></span><button type='button' class='close' data-dismiss='alert' aria-label='Close'><span aria-hidden='true' style='color:black;'>&times;</span></button> Unauthorized access. Please try again.</div>");
+                $this->redirect(array('action' => 'startupShowcase'));
+            }
+        }
+        if ($this->request->data['IotInvestorConnect']['type'] == "edit") {
+            $this->request->data = $this->IotInvestorConnect->read(null, $this->request->data['IotInvestorConnect']['id']);
+            $this->request->data['IotInvestorConnect']['month'] = $this->request->data['IotInvestorConnect']['month'] . '-' . $this->request->data['IotInvestorConnect']['year'];
+        } else if ($this->request->data['IotInvestorConnect']['type'] == "delete") {
+            $investor_id = $this->request->data['IotInvestorConnect']['id'];
+
+            if ($this->IotInvestorConnect->delete($investor_id)) {
+                $this->Session->setFlash("<div id='php-alert' class='alert alert-dismissible alert-danger'><span class='glyphicon glyphicon-remove-circle'></span><button type='button' class='close' data-dismiss='alert' aria-label='Close'><span aria-hidden='true' style='color:black;'>&times;</span></button> Data has been deleted Successfully.</div>");
+
+                $this->redirect(array('action' => 'startupShowcase'));
+            } else {
+                $this->Session->setFlash("<div id='php-alert' class='alert alert-dismissible alert-danger'><span class='glyphicon glyphicon-remove-circle'></span><button type='button' class='close' data-dismiss='alert' aria-label='Close'><span aria-hidden='true' style='color:black;'>&times;</span></button>Failed to delete.Please try again.</div>");
+
+                $this->redirect(array('action' => 'startupShowcase'));
+            }
+        } else if ($this->request->data['IotInvestorConnect']['type'] == "insert") {
+
+            $monthYear = explode('-', $this->request->data['IotInvestorConnect']['month']);
+            $this->request->data['IotInvestorConnect']['month'] = $monthYear[0];
+            $this->request->data['IotInvestorConnect']['year'] = $monthYear[1];
+
+
+            if ($this->request->data['IotInvestorConnect']['id']) {
+                $message = "Updated Successfully";
+            } else {
+                $message = "Added Successfully";
+            }
+            $this->request->data['IotInvestorConnect']['type'] = 'Startup Showcase';
+            $this->IotInvestorConnect->save($this->request->data);
+            $this->Session->setFlash("<div id='php-alert' class='alert alert-dismissible alert-success'><span class='glyphicon glyphicon-remove-circle'></span><button type='button' class='close' data-dismiss='alert' aria-label='Close'><span aria-hidden='true' style='color:black;'>&times;</span></button> " . $message . ".</div>");
+            $this->redirect(array('action' => 'startupShowcase'));
+        }
+        $this->IotInvestorConnect->bindModel(array('belongsTo' => array("IotStartUp")));
+        $manage_list = $this->IotInvestorConnect->find('all', array("order" => array('IotInvestorConnect.id DESC')));
+        $this->set('table_list', $manage_list);
+
+        $this->changeCSRFToken();
+    }
+
+    public function sharkTank($id = null)
+    {
+        $this->layout = 'fab_layout';
+        $this->getStartUps();
+
+        $this->_userSessionCheckout();
+        $this->loadModel('IotInvestorConnect');
+
+        if (!empty($this->request->data)) {
+            if ($this->request->data['IotInvestorConnect']['csrf_token'] != $this->Session->read('CSRFTOKEN')) {
+                $this->Session->setFlash("<div id='php-alert' class='alert alert-dismissible alert-success'><span class='glyphicon glyphicon-remove-circle'></span><button type='button' class='close' data-dismiss='alert' aria-label='Close'><span aria-hidden='true' style='color:black;'>&times;</span></button> Unauthorized access. Please try again.</div>");
+                $this->redirect(array('action' => 'sharkTank'));
+            }
+        }
+        if ($this->request->data['IotInvestorConnect']['type'] == "edit") {
+            $this->request->data = $this->IotInvestorConnect->read(null, $this->request->data['IotInvestorConnect']['id']);
+            $this->request->data['IotInvestorConnect']['month'] = $this->request->data['IotInvestorConnect']['month'] . '-' . $this->request->data['IotInvestorConnect']['year'];
+        } else if ($this->request->data['IotInvestorConnect']['type'] == "delete") {
+            $investor_id = $this->request->data['IotInvestorConnect']['id'];
+
+            if ($this->IotInvestorConnect->delete($investor_id)) {
+                $this->Session->setFlash("<div id='php-alert' class='alert alert-dismissible alert-danger'><span class='glyphicon glyphicon-remove-circle'></span><button type='button' class='close' data-dismiss='alert' aria-label='Close'><span aria-hidden='true' style='color:black;'>&times;</span></button> Data has been deleted Successfully.</div>");
+
+                $this->redirect(array('action' => 'sharkTank'));
+            } else {
+                $this->Session->setFlash("<div id='php-alert' class='alert alert-dismissible alert-danger'><span class='glyphicon glyphicon-remove-circle'></span><button type='button' class='close' data-dismiss='alert' aria-label='Close'><span aria-hidden='true' style='color:black;'>&times;</span></button>Failed to delete.Please try again.</div>");
+
+                $this->redirect(array('action' => 'sharkTank'));
+            }
+        } else if ($this->request->data['IotInvestorConnect']['type'] == "insert") {
+
+            $monthYear = explode('-', $this->request->data['IotInvestorConnect']['month']);
+            $this->request->data['IotInvestorConnect']['month'] = $monthYear[0];
+            $this->request->data['IotInvestorConnect']['year'] = $monthYear[1];
+
+
+            if ($this->request->data['IotInvestorConnect']['id']) {
+                $message = "Updated Successfully";
+            } else {
+                $message = "Added Successfully";
+            }
+            $this->request->data['IotInvestorConnect']['type'] = 'Shark Tank';
+            $this->IotInvestorConnect->save($this->request->data);
+            $this->Session->setFlash("<div id='php-alert' class='alert alert-dismissible alert-success'><span class='glyphicon glyphicon-remove-circle'></span><button type='button' class='close' data-dismiss='alert' aria-label='Close'><span aria-hidden='true' style='color:black;'>&times;</span></button> " . $message . ".</div>");
+            $this->redirect(array('action' => 'sharkTank'));
+        }
+        $this->IotInvestorConnect->bindModel(array('belongsTo' => array("IotStartUp")));
+        $manage_list = $this->IotInvestorConnect->find('all', array("order" => array('IotInvestorConnect.id DESC')));
+        $this->set('table_list', $manage_list);
+
+        $this->changeCSRFToken();
+    }
+
+
+    public function softLanding($id = null)
+    {
+        $this->layout = 'fab_layout';
+        $this->getStartUps();
+
+        $this->_userSessionCheckout();
+        $this->loadModel('IotInvestorConnect');
+
+        if (!empty($this->request->data)) {
+            if ($this->request->data['IotInvestorConnect']['csrf_token'] != $this->Session->read('CSRFTOKEN')) {
+                $this->Session->setFlash("<div id='php-alert' class='alert alert-dismissible alert-success'><span class='glyphicon glyphicon-remove-circle'></span><button type='button' class='close' data-dismiss='alert' aria-label='Close'><span aria-hidden='true' style='color:black;'>&times;</span></button> Unauthorized access. Please try again.</div>");
+                $this->redirect(array('action' => 'softLanding'));
+            }
+        }
+        if ($this->request->data['IotInvestorConnect']['type'] == "edit") {
+            $this->request->data = $this->IotInvestorConnect->read(null, $this->request->data['IotInvestorConnect']['id']);
+            $this->request->data['IotInvestorConnect']['month'] = $this->request->data['IotInvestorConnect']['month'] . '-' . $this->request->data['IotInvestorConnect']['year'];
+        } else if ($this->request->data['IotInvestorConnect']['type'] == "delete") {
+            $investor_id = $this->request->data['IotInvestorConnect']['id'];
+
+            if ($this->IotInvestorConnect->delete($investor_id)) {
+                $this->Session->setFlash("<div id='php-alert' class='alert alert-dismissible alert-danger'><span class='glyphicon glyphicon-remove-circle'></span><button type='button' class='close' data-dismiss='alert' aria-label='Close'><span aria-hidden='true' style='color:black;'>&times;</span></button> Data has been deleted Successfully.</div>");
+
+                $this->redirect(array('action' => 'softLanding'));
+            } else {
+                $this->Session->setFlash("<div id='php-alert' class='alert alert-dismissible alert-danger'><span class='glyphicon glyphicon-remove-circle'></span><button type='button' class='close' data-dismiss='alert' aria-label='Close'><span aria-hidden='true' style='color:black;'>&times;</span></button>Failed to delete.Please try again.</div>");
+
+                $this->redirect(array('action' => 'softLanding'));
+            }
+        } else if ($this->request->data['IotInvestorConnect']['type'] == "insert") {
+
+            $monthYear = explode('-', $this->request->data['IotInvestorConnect']['month']);
+            $this->request->data['IotInvestorConnect']['month'] = $monthYear[0];
+            $this->request->data['IotInvestorConnect']['year'] = $monthYear[1];
+
+
+            if ($this->request->data['IotInvestorConnect']['id']) {
+                $message = "Updated Successfully";
+            } else {
+                $message = "Added Successfully";
+            }
+            $this->request->data['IotInvestorConnect']['type'] = 'Soft Landing';
+            $this->IotInvestorConnect->save($this->request->data);
+            $this->Session->setFlash("<div id='php-alert' class='alert alert-dismissible alert-success'><span class='glyphicon glyphicon-remove-circle'></span><button type='button' class='close' data-dismiss='alert' aria-label='Close'><span aria-hidden='true' style='color:black;'>&times;</span></button> " . $message . ".</div>");
+            $this->redirect(array('action' => 'softLanding'));
+        }
+        $this->IotInvestorConnect->bindModel(array('belongsTo' => array("IotStartUp")));
+        $manage_list = $this->IotInvestorConnect->find('all', array("order" => array('IotInvestorConnect.id DESC')));
+        $this->set('table_list', $manage_list);
+
+        $this->changeCSRFToken();
+    }
+
+    public function womenEntrepreneurs($id = null)
+    {
+        $this->layout = 'fab_layout';
+        $this->getStartUps();
+
+        $this->_userSessionCheckout();
+        $this->loadModel('IotInvestorConnect');
+
+        if (!empty($this->request->data)) {
+            if ($this->request->data['IotInvestorConnect']['csrf_token'] != $this->Session->read('CSRFTOKEN')) {
+                $this->Session->setFlash("<div id='php-alert' class='alert alert-dismissible alert-success'><span class='glyphicon glyphicon-remove-circle'></span><button type='button' class='close' data-dismiss='alert' aria-label='Close'><span aria-hidden='true' style='color:black;'>&times;</span></button> Unauthorized access. Please try again.</div>");
+                $this->redirect(array('action' => 'womenEntrepreneurs'));
+            }
+        }
+        if ($this->request->data['IotInvestorConnect']['type'] == "edit") {
+            $this->request->data = $this->IotInvestorConnect->read(null, $this->request->data['IotInvestorConnect']['id']);
+            $this->request->data['IotInvestorConnect']['month'] = $this->request->data['IotInvestorConnect']['month'] . '-' . $this->request->data['IotInvestorConnect']['year'];
+        } else if ($this->request->data['IotInvestorConnect']['type'] == "delete") {
+            $investor_id = $this->request->data['IotInvestorConnect']['id'];
+
+            if ($this->IotInvestorConnect->delete($investor_id)) {
+                $this->Session->setFlash("<div id='php-alert' class='alert alert-dismissible alert-danger'><span class='glyphicon glyphicon-remove-circle'></span><button type='button' class='close' data-dismiss='alert' aria-label='Close'><span aria-hidden='true' style='color:black;'>&times;</span></button> Data has been deleted Successfully.</div>");
+
+                $this->redirect(array('action' => 'womenEntrepreneurs'));
+            } else {
+                $this->Session->setFlash("<div id='php-alert' class='alert alert-dismissible alert-danger'><span class='glyphicon glyphicon-remove-circle'></span><button type='button' class='close' data-dismiss='alert' aria-label='Close'><span aria-hidden='true' style='color:black;'>&times;</span></button>Failed to delete.Please try again.</div>");
+
+                $this->redirect(array('action' => 'womenEntrepreneurs'));
+            }
+        } else if ($this->request->data['IotInvestorConnect']['type'] == "insert") {
+
+            $monthYear = explode('-', $this->request->data['IotInvestorConnect']['month']);
+            $this->request->data['IotInvestorConnect']['month'] = $monthYear[0];
+            $this->request->data['IotInvestorConnect']['year'] = $monthYear[1];
+
+
+            if ($this->request->data['IotInvestorConnect']['id']) {
+                $message = "Updated Successfully";
+            } else {
+                $message = "Added Successfully";
+            }
+
+            $this->request->data['IotInvestorConnect']['type'] = 'Women Entrepreneurs';
+            $this->IotInvestorConnect->save($this->request->data);
+            $this->Session->setFlash("<div id='php-alert' class='alert alert-dismissible alert-success'><span class='glyphicon glyphicon-remove-circle'></span><button type='button' class='close' data-dismiss='alert' aria-label='Close'><span aria-hidden='true' style='color:black;'>&times;</span></button> " . $message . ".</div>");
+            $this->redirect(array('action' => 'womenEntrepreneurs'));
+        }
+        $this->IotInvestorConnect->bindModel(array('belongsTo' => array("IotStartUp")));
+        $manage_list = $this->IotInvestorConnect->find('all', array("order" => array('IotInvestorConnect.id DESC')));
+        $this->set('table_list', $manage_list);
+
+        $this->changeCSRFToken();
+    }
+
+    public function bootCamp($id = null)
+    {
+        $this->layout = 'fab_layout';
+        $this->getStartUps();
+
+        $this->_userSessionCheckout();
+        $this->loadModel('IotInvestorConnect');
+
+        if (!empty($this->request->data)) {
+            if ($this->request->data['IotInvestorConnect']['csrf_token'] != $this->Session->read('CSRFTOKEN')) {
+                $this->Session->setFlash("<div id='php-alert' class='alert alert-dismissible alert-success'><span class='glyphicon glyphicon-remove-circle'></span><button type='button' class='close' data-dismiss='alert' aria-label='Close'><span aria-hidden='true' style='color:black;'>&times;</span></button> Unauthorized access. Please try again.</div>");
+                $this->redirect(array('action' => 'bootCamp'));
+            }
+        }
+        if ($this->request->data['IotInvestorConnect']['type'] == "edit") {
+            $this->request->data = $this->IotInvestorConnect->read(null, $this->request->data['IotInvestorConnect']['id']);
+            $this->request->data['IotInvestorConnect']['month'] = $this->request->data['IotInvestorConnect']['month'] . '-' . $this->request->data['IotInvestorConnect']['year'];
+        } else if ($this->request->data['IotInvestorConnect']['type'] == "delete") {
+            $investor_id = $this->request->data['IotInvestorConnect']['id'];
+
+            if ($this->IotInvestorConnect->delete($investor_id)) {
+                $this->Session->setFlash("<div id='php-alert' class='alert alert-dismissible alert-danger'><span class='glyphicon glyphicon-remove-circle'></span><button type='button' class='close' data-dismiss='alert' aria-label='Close'><span aria-hidden='true' style='color:black;'>&times;</span></button> Data has been deleted Successfully.</div>");
+
+                $this->redirect(array('action' => 'bootCamp'));
+            } else {
+                $this->Session->setFlash("<div id='php-alert' class='alert alert-dismissible alert-danger'><span class='glyphicon glyphicon-remove-circle'></span><button type='button' class='close' data-dismiss='alert' aria-label='Close'><span aria-hidden='true' style='color:black;'>&times;</span></button>Failed to delete.Please try again.</div>");
+
+                $this->redirect(array('action' => 'bootCamp'));
+            }
+        } else if ($this->request->data['IotInvestorConnect']['type'] == "insert") {
+
+            $monthYear = explode('-', $this->request->data['IotInvestorConnect']['month']);
+            $this->request->data['IotInvestorConnect']['month'] = $monthYear[0];
+            $this->request->data['IotInvestorConnect']['year'] = $monthYear[1];
+
+
+            if ($this->request->data['IotInvestorConnect']['id']) {
+                $message = "Updated Successfully";
+            } else {
+                $message = "Added Successfully";
+            }
+
+            $this->request->data['IotInvestorConnect']['type'] = 'Boot Camp';
+            $this->IotInvestorConnect->save($this->request->data);
+            $this->Session->setFlash("<div id='php-alert' class='alert alert-dismissible alert-success'><span class='glyphicon glyphicon-remove-circle'></span><button type='button' class='close' data-dismiss='alert' aria-label='Close'><span aria-hidden='true' style='color:black;'>&times;</span></button> " . $message . ".</div>");
+            $this->redirect(array('action' => 'bootCamp'));
+        }
+        $this->IotInvestorConnect->bindModel(array('belongsTo' => array("IotStartUp")));
+        $manage_list = $this->IotInvestorConnect->find('all', array("order" => array('IotInvestorConnect.id DESC')));
+        $this->set('table_list', $manage_list);
+
+        $this->changeCSRFToken();
+    }
+
+    public function edpInTier($id = null)
+    {
+        $this->layout = 'fab_layout';
+        $this->getStartUps();
+
+        $this->_userSessionCheckout();
+        $this->loadModel('IotInvestorConnect');
+
+        if (!empty($this->request->data)) {
+            if ($this->request->data['IotInvestorConnect']['csrf_token'] != $this->Session->read('CSRFTOKEN')) {
+                $this->Session->setFlash("<div id='php-alert' class='alert alert-dismissible alert-success'><span class='glyphicon glyphicon-remove-circle'></span><button type='button' class='close' data-dismiss='alert' aria-label='Close'><span aria-hidden='true' style='color:black;'>&times;</span></button> Unauthorized access. Please try again.</div>");
+                $this->redirect(array('action' => 'edpInTier'));
+            }
+        }
+        if ($this->request->data['IotInvestorConnect']['type'] == "edit") {
+            $this->request->data = $this->IotInvestorConnect->read(null, $this->request->data['IotInvestorConnect']['id']);
+            $this->request->data['IotInvestorConnect']['month'] = $this->request->data['IotInvestorConnect']['month'] . '-' . $this->request->data['IotInvestorConnect']['year'];
+        } else if ($this->request->data['IotInvestorConnect']['type'] == "delete") {
+            $investor_id = $this->request->data['IotInvestorConnect']['id'];
+
+            if ($this->IotInvestorConnect->delete($investor_id)) {
+                $this->Session->setFlash("<div id='php-alert' class='alert alert-dismissible alert-danger'><span class='glyphicon glyphicon-remove-circle'></span><button type='button' class='close' data-dismiss='alert' aria-label='Close'><span aria-hidden='true' style='color:black;'>&times;</span></button> Data has been deleted Successfully.</div>");
+
+                $this->redirect(array('action' => 'edpInTier'));
+            } else {
+                $this->Session->setFlash("<div id='php-alert' class='alert alert-dismissible alert-danger'><span class='glyphicon glyphicon-remove-circle'></span><button type='button' class='close' data-dismiss='alert' aria-label='Close'><span aria-hidden='true' style='color:black;'>&times;</span></button>Failed to delete.Please try again.</div>");
+
+                $this->redirect(array('action' => 'edpInTier'));
+            }
+        } else if ($this->request->data['IotInvestorConnect']['type'] == "insert") {
+
+            $monthYear = explode('-', $this->request->data['IotInvestorConnect']['month']);
+            $this->request->data['IotInvestorConnect']['month'] = $monthYear[0];
+            $this->request->data['IotInvestorConnect']['year'] = $monthYear[1];
+
+
+            if ($this->request->data['IotInvestorConnect']['id']) {
+                $message = "Updated Successfully";
+            } else {
+                $message = "Added Successfully";
+            }
+
+            $this->request->data['IotInvestorConnect']['type'] = 'EDP In Tier';
+            $this->IotInvestorConnect->save($this->request->data);
+            $this->Session->setFlash("<div id='php-alert' class='alert alert-dismissible alert-success'><span class='glyphicon glyphicon-remove-circle'></span><button type='button' class='close' data-dismiss='alert' aria-label='Close'><span aria-hidden='true' style='color:black;'>&times;</span></button> " . $message . ".</div>");
+            $this->redirect(array('action' => 'edpInTier'));
+        }
+        $this->IotInvestorConnect->bindModel(array('belongsTo' => array("IotStartUp")));
+        $manage_list = $this->IotInvestorConnect->find('all', array("order" => array('IotInvestorConnect.id DESC')));
+        $this->set('table_list', $manage_list);
+
+        $this->changeCSRFToken();
+    }
+
+
+    public function internationalConnect($id = null)
+    {
+        $this->layout = 'fab_layout';
+        $this->getStartUps();
+
+        $this->_userSessionCheckout();
+        $this->loadModel('IotInvestorConnect');
+
+        if (!empty($this->request->data)) {
+            if ($this->request->data['IotInvestorConnect']['csrf_token'] != $this->Session->read('CSRFTOKEN')) {
+                $this->Session->setFlash("<div id='php-alert' class='alert alert-dismissible alert-success'><span class='glyphicon glyphicon-remove-circle'></span><button type='button' class='close' data-dismiss='alert' aria-label='Close'><span aria-hidden='true' style='color:black;'>&times;</span></button> Unauthorized access. Please try again.</div>");
+                $this->redirect(array('action' => 'internationalConnect'));
+            }
+        }
+        if ($this->request->data['IotInvestorConnect']['type'] == "edit") {
+            $this->request->data = $this->IotInvestorConnect->read(null, $this->request->data['IotInvestorConnect']['id']);
+            $this->request->data['IotInvestorConnect']['month'] = $this->request->data['IotInvestorConnect']['month'] . '-' . $this->request->data['IotInvestorConnect']['year'];
+        } else if ($this->request->data['IotInvestorConnect']['type'] == "delete") {
+            $investor_id = $this->request->data['IotInvestorConnect']['id'];
+
+            if ($this->IotInvestorConnect->delete($investor_id)) {
+                $this->Session->setFlash("<div id='php-alert' class='alert alert-dismissible alert-danger'><span class='glyphicon glyphicon-remove-circle'></span><button type='button' class='close' data-dismiss='alert' aria-label='Close'><span aria-hidden='true' style='color:black;'>&times;</span></button> Data has been deleted Successfully.</div>");
+
+                $this->redirect(array('action' => 'internationalConnect'));
+            } else {
+                $this->Session->setFlash("<div id='php-alert' class='alert alert-dismissible alert-danger'><span class='glyphicon glyphicon-remove-circle'></span><button type='button' class='close' data-dismiss='alert' aria-label='Close'><span aria-hidden='true' style='color:black;'>&times;</span></button>Failed to delete.Please try again.</div>");
+
+                $this->redirect(array('action' => 'internationalConnect'));
+            }
+        } else if ($this->request->data['IotInvestorConnect']['type'] == "insert") {
+
+            $monthYear = explode('-', $this->request->data['IotInvestorConnect']['month']);
+            $this->request->data['IotInvestorConnect']['month'] = $monthYear[0];
+            $this->request->data['IotInvestorConnect']['year'] = $monthYear[1];
+
+
+            if ($this->request->data['IotInvestorConnect']['id']) {
+                $message = "Updated Successfully";
+            } else {
+                $message = "Added Successfully";
+            }
+
+            $this->request->data['IotInvestorConnect']['type'] = 'International Connect';
+            $this->IotInvestorConnect->save($this->request->data);
+            $this->Session->setFlash("<div id='php-alert' class='alert alert-dismissible alert-success'><span class='glyphicon glyphicon-remove-circle'></span><button type='button' class='close' data-dismiss='alert' aria-label='Close'><span aria-hidden='true' style='color:black;'>&times;</span></button> " . $message . ".</div>");
+            $this->redirect(array('action' => 'internationalConnect'));
+        }
+        $this->IotInvestorConnect->bindModel(array('belongsTo' => array("IotStartUp")));
+        $manage_list = $this->IotInvestorConnect->find('all', array("order" => array('IotInvestorConnect.id DESC')));
+        $this->set('table_list', $manage_list);
+
+        $this->changeCSRFToken();
+    }
+
+    public function industryEnterpriseConnect($id = null)
+    {
+        $this->layout = 'fab_layout';
+        $this->getStartUps();
+
+        $this->_userSessionCheckout();
+        $this->loadModel('IotInvestorConnect');
+
+        if (!empty($this->request->data)) {
+            if ($this->request->data['IotInvestorConnect']['csrf_token'] != $this->Session->read('CSRFTOKEN')) {
+                $this->Session->setFlash("<div id='php-alert' class='alert alert-dismissible alert-success'><span class='glyphicon glyphicon-remove-circle'></span><button type='button' class='close' data-dismiss='alert' aria-label='Close'><span aria-hidden='true' style='color:black;'>&times;</span></button> Unauthorized access. Please try again.</div>");
+                $this->redirect(array('action' => 'industryEnterpriseConnect'));
+            }
+        }
+        if ($this->request->data['IotInvestorConnect']['type'] == "edit") {
+            $this->request->data = $this->IotInvestorConnect->read(null, $this->request->data['IotInvestorConnect']['id']);
+            $this->request->data['IotInvestorConnect']['month'] = $this->request->data['IotInvestorConnect']['month'] . '-' . $this->request->data['IotInvestorConnect']['year'];
+        } else if ($this->request->data['IotInvestorConnect']['type'] == "delete") {
+            $investor_id = $this->request->data['IotInvestorConnect']['id'];
+
+            if ($this->IotInvestorConnect->delete($investor_id)) {
+                $this->Session->setFlash("<div id='php-alert' class='alert alert-dismissible alert-danger'><span class='glyphicon glyphicon-remove-circle'></span><button type='button' class='close' data-dismiss='alert' aria-label='Close'><span aria-hidden='true' style='color:black;'>&times;</span></button> Data has been deleted Successfully.</div>");
+
+                $this->redirect(array('action' => 'industryEnterpriseConnect'));
+            } else {
+                $this->Session->setFlash("<div id='php-alert' class='alert alert-dismissible alert-danger'><span class='glyphicon glyphicon-remove-circle'></span><button type='button' class='close' data-dismiss='alert' aria-label='Close'><span aria-hidden='true' style='color:black;'>&times;</span></button>Failed to delete.Please try again.</div>");
+
+                $this->redirect(array('action' => 'industryEnterpriseConnect'));
+            }
+        } else if ($this->request->data['IotInvestorConnect']['type'] == "insert") {
+
+            $monthYear = explode('-', $this->request->data['IotInvestorConnect']['month']);
+            $this->request->data['IotInvestorConnect']['month'] = $monthYear[0];
+            $this->request->data['IotInvestorConnect']['year'] = $monthYear[1];
+
+
+            if ($this->request->data['IotInvestorConnect']['id']) {
+                $message = "Updated Successfully";
+            } else {
+                $message = "Added Successfully";
+            }
+
+            $this->request->data['IotInvestorConnect']['type'] = 'Enterprise Connect';
+            $this->IotInvestorConnect->save($this->request->data);
+            $this->Session->setFlash("<div id='php-alert' class='alert alert-dismissible alert-success'><span class='glyphicon glyphicon-remove-circle'></span><button type='button' class='close' data-dismiss='alert' aria-label='Close'><span aria-hidden='true' style='color:black;'>&times;</span></button> " . $message . ".</div>");
+            $this->redirect(array('action' => 'industryEnterpriseConnect'));
+        }
+        $this->IotInvestorConnect->bindModel(array('belongsTo' => array("IotStartUp")));
+        $manage_list = $this->IotInvestorConnect->find('all', array("order" => array('IotInvestorConnect.id DESC')));
+        $this->set('table_list', $manage_list);
+
+        $this->changeCSRFToken();
+    }
+
+    public function mentors($id = null)
+    {
+        $this->layout = 'fab_layout';
+        $this->getStartUps();
+
+        $this->_userSessionCheckout();
+        $this->loadModel('IotInvestorConnect');
+
+        if (!empty($this->request->data)) {
+            if ($this->request->data['IotInvestorConnect']['csrf_token'] != $this->Session->read('CSRFTOKEN')) {
+                $this->Session->setFlash("<div id='php-alert' class='alert alert-dismissible alert-success'><span class='glyphicon glyphicon-remove-circle'></span><button type='button' class='close' data-dismiss='alert' aria-label='Close'><span aria-hidden='true' style='color:black;'>&times;</span></button> Unauthorized access. Please try again.</div>");
+                $this->redirect(array('action' => 'mentors'));
+            }
+        }
+        if ($this->request->data['IotInvestorConnect']['type'] == "edit") {
+            $this->request->data = $this->IotInvestorConnect->read(null, $this->request->data['IotInvestorConnect']['id']);
+            $this->request->data['IotInvestorConnect']['month'] = $this->request->data['IotInvestorConnect']['month'] . '-' . $this->request->data['IotInvestorConnect']['year'];
+        } else if ($this->request->data['IotInvestorConnect']['type'] == "delete") {
+            $investor_id = $this->request->data['IotInvestorConnect']['id'];
+
+            if ($this->IotInvestorConnect->delete($investor_id)) {
+                $this->Session->setFlash("<div id='php-alert' class='alert alert-dismissible alert-danger'><span class='glyphicon glyphicon-remove-circle'></span><button type='button' class='close' data-dismiss='alert' aria-label='Close'><span aria-hidden='true' style='color:black;'>&times;</span></button> Data has been deleted Successfully.</div>");
+
+                $this->redirect(array('action' => 'mentors'));
+            } else {
+                $this->Session->setFlash("<div id='php-alert' class='alert alert-dismissible alert-danger'><span class='glyphicon glyphicon-remove-circle'></span><button type='button' class='close' data-dismiss='alert' aria-label='Close'><span aria-hidden='true' style='color:black;'>&times;</span></button>Failed to delete.Please try again.</div>");
+
+                $this->redirect(array('action' => 'mentors'));
+            }
+        } else if ($this->request->data['IotInvestorConnect']['type'] == "insert") {
+
+          
+
+            if ($this->request->data['IotInvestorConnect']['id']) {
+                $message = "Updated Successfully";
+            } else {
+                $message = "Added Successfully";
+            }
+
+            $this->request->data['IotInvestorConnect']['type'] = 'Mentoring';
+
+            $monthYear = explode('-', $this->request->data['IotInvestorConnect']['start_date']);
+            $this->request->data['IotInvestorConnect']['month'] = date('F', mktime(0, 0, 0, $monthYear[1], 10));
+            $this->request->data['IotInvestorConnect']['year'] = $monthYear[2];
+
+            $incubation_date =  $this->request->data['IotInvestorConnect']['start_date'];
+            $incubation_date_new = new DateTime($incubation_date);
+            $this->request->data['IotInvestorConnect']['start_date'] =  $incubation_date_new->format('Y-m-d');
+            $this->IotInvestorConnect->save($this->request->data);
+            $this->Session->setFlash("<div id='php-alert' class='alert alert-dismissible alert-success'><span class='glyphicon glyphicon-remove-circle'></span><button type='button' class='close' data-dismiss='alert' aria-label='Close'><span aria-hidden='true' style='color:black;'>&times;</span></button> " . $message . ".</div>");
+            $this->redirect(array('action' => 'mentors'));
+        }
+        $this->IotInvestorConnect->bindModel(array('belongsTo' => array("IotStartUp")));
+        $manage_list = $this->IotInvestorConnect->find('all', array("order" => array('IotInvestorConnect.id DESC')));
+        $this->set('table_list', $manage_list);
+
+        $this->changeCSRFToken();
+    }
+
+    public function workshop($id = null)
+    {
+        $this->layout = 'fab_layout';
+        $this->getStartUps();
+
+        $this->_userSessionCheckout();
+        $this->loadModel('IotWorkshop');
+
+        if (!empty($this->request->data)) {
+            if ($this->request->data['IotWorkshop']['csrf_token'] != $this->Session->read('CSRFTOKEN')) {
+                $this->Session->setFlash("<div id='php-alert' class='alert alert-dismissible alert-success'><span class='glyphicon glyphicon-remove-circle'></span><button type='button' class='close' data-dismiss='alert' aria-label='Close'><span aria-hidden='true' style='color:black;'>&times;</span></button> Unauthorized access. Please try again.</div>");
+                $this->redirect(array('action' => 'workshop'));
+            }
+        }
+        if ($this->request->data['IotWorkshop']['type'] == "edit") {
+            $this->request->data = $this->IotWorkshop->read(null, $this->request->data['IotWorkshop']['id']);
+            $this->request->data['IotWorkshop']['month'] = $this->request->data['IotWorkshop']['month'] . '-' . $this->request->data['IotWorkshop']['year'];
+        } else if ($this->request->data['IotWorkshop']['type'] == "delete") {
+            $investor_id = $this->request->data['IotWorkshop']['id'];
+
+            if ($this->IotWorkshop->delete($investor_id)) {
+                $this->Session->setFlash("<div id='php-alert' class='alert alert-dismissible alert-danger'><span class='glyphicon glyphicon-remove-circle'></span><button type='button' class='close' data-dismiss='alert' aria-label='Close'><span aria-hidden='true' style='color:black;'>&times;</span></button> Data has been deleted Successfully.</div>");
+
+                $this->redirect(array('action' => 'workshop'));
+            } else {
+                $this->Session->setFlash("<div id='php-alert' class='alert alert-dismissible alert-danger'><span class='glyphicon glyphicon-remove-circle'></span><button type='button' class='close' data-dismiss='alert' aria-label='Close'><span aria-hidden='true' style='color:black;'>&times;</span></button>Failed to delete.Please try again.</div>");
+
+                $this->redirect(array('action' => 'workshop'));
+            }
+        } else if ($this->request->data['IotWorkshop']['type'] == "insert") {
+
+            $monthYear = explode('-', $this->request->data['IotWorkshop']['month']);
+            $this->request->data['IotWorkshop']['month'] = $monthYear[0];
+            $this->request->data['IotWorkshop']['year'] = $monthYear[1];
+
+
+            if ($this->request->data['IotWorkshop']['id']) {
+                $message = "Updated Successfully";
+            } else {
+                $message = "Added Successfully";
+            }
+
+         
+            $this->IotWorkshop->save($this->request->data);
+            $this->Session->setFlash("<div id='php-alert' class='alert alert-dismissible alert-success'><span class='glyphicon glyphicon-remove-circle'></span><button type='button' class='close' data-dismiss='alert' aria-label='Close'><span aria-hidden='true' style='color:black;'>&times;</span></button> " . $message . ".</div>");
+            $this->redirect(array('action' => 'workshop'));
+        }
+      
+        $manage_list = $this->IotWorkshop->find('all', array("order" => array('IotWorkshop.id DESC')));
+        $this->set('table_list', $manage_list);
+
+        $this->changeCSRFToken();
+    }
 }

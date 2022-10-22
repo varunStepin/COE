@@ -32,7 +32,7 @@
                                 <td class="text-nowrap"><?php echo date('d-m-Y', strtotime($list['CifRoundtable']['date'])); ?></td>
                                 <td><?php echo $list['CifRoundtable']['speaker']; ?></td>
                                 <td><?php echo $list['CifRoundtable']['no_participant']; ?></td>
-                                  <td><a href="#" onclick="loadParticipant(<?php echo $list['CifRoundtable']['id']; ?>,'CifRoundtableParticipant')"><span>View Participants</span></a></td>
+                                <td><a href="#" onclick="loadParticipant(<?php echo $list['CifRoundtable']['id']; ?>,'CifRoundtableParticipant')"><span>View Participants</span></a></td>
                             </tr>
                         <?php
                         } ?>
@@ -74,46 +74,46 @@
             <?php } ?>
 
             <?php if ($queryString['type'] == 'Startups Enrolled') { ?>
-            <div class="table-responsive">
-                <table class="table example_long table-striped table-bordered table-hover">
-                    <thead class="bg-primary-gradient text-white">
-                        <tr>
-                            <th>#</th>
-                            <th>Year</th>
-                            <th>Startup Name</th>
-                            <th>Incubation Date</th>
-                            <th>Graduation Date</th>
-                            <th>Founder</th>
-                            <th>Email</th>
-                            <th>url</th>
-                            <th># of emp</th>
-                            <th># of women emp</th>
-                            <th>Is woman founder</th>
-                            <th>Contact Number</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <?php
-                        $i = 1;
-                        foreach ($table_list as $list) {  ?>
+                <div class="table-responsive">
+                    <table class="table example_long table-striped table-bordered table-hover">
+                        <thead class="bg-primary-gradient text-white">
                             <tr>
-                                <td><?php echo $i++; ?></td>
-                                <td><?php echo $list['CifStartup']['year']; ?></td>
-                                <td><?php echo $list['CifStartup']['startup_name']; ?></td>
-                                <td><?php echo date('d-m-Y', strtotime($list['CifStartup']['incubation_date'])); ?></td>
-                                <td><?php echo date('d-m-Y', strtotime($list['CifStartup']['graduation_date'])); ?></td>
-                                <td><?php echo $list['CifStartup']['founder_name']; ?></td>
-                                <td><?php echo $list['CifStartup']['founder_email']; ?></td>
-                                <td><?php echo $list['CifStartup']['url']; ?></td>
-                                <td><?php echo $list['CifStartup']['no_employees']; ?></td>
-                                <td><?php echo $list['CifStartup']['no_employees_women']; ?></td>
-                                <td><?php echo ($list['CifStartup']['is_women_founder']) ? "Yes" : "No"; ?></td>
-                                <td><?php echo $list['CifStartup']['mobile']; ?></td>
+                                <th>#</th>
+                                <th>Year</th>
+                                <th>Startup Name</th>
+                                <th>Incubation Date</th>
+                                <th>Graduation Date</th>
+                                <th>Founder</th>
+                                <th>Email</th>
+                                <th>url</th>
+                                <th># of emp</th>
+                                <th># of women emp</th>
+                                <th>Is woman founder</th>
+                                <th>Contact Number</th>
                             </tr>
-                        <?php
-                        } ?>
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody>
+                            <?php
+                            $i = 1;
+                            foreach ($table_list as $list) {  ?>
+                                <tr>
+                                    <td><?php echo $i++; ?></td>
+                                    <td><?php echo $list['CifStartup']['year']; ?></td>
+                                    <td><?php echo $list['CifStartup']['startup_name']; ?></td>
+                                    <td><?php echo date('d-m-Y', strtotime($list['CifStartup']['incubation_date'])); ?></td>
+                                    <td><?php echo date('d-m-Y', strtotime($list['CifStartup']['graduation_date'])); ?></td>
+                                    <td><?php echo $list['CifStartup']['founder_name']; ?></td>
+                                    <td><?php echo $list['CifStartup']['founder_email']; ?></td>
+                                    <td><?php echo $list['CifStartup']['url']; ?></td>
+                                    <td><?php echo $list['CifStartup']['no_employees']; ?></td>
+                                    <td><?php echo $list['CifStartup']['no_employees_women']; ?></td>
+                                    <td><?php echo ($list['CifStartup']['is_women_founder']) ? "Yes" : "No"; ?></td>
+                                    <td><?php echo $list['CifStartup']['mobile']; ?></td>
+                                </tr>
+                            <?php
+                            } ?>
+                        </tbody>
+                    </table>
                 </div>
             <?php } ?>
 
@@ -125,8 +125,8 @@
                             <th>Year</th>
                             <th>Startup Name</th>
                             <th>Total Fund Raised in INR(Cr)</th>
-                            <th>Fundinding Agency</th>
-                            <th>Releated Documents</th>
+                            <th>Funding Agency</th>
+                            <th>Related Documents</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -151,68 +151,71 @@
             <?php } ?>
 
             <?php if ($queryString['type'] == 'Gender Diversity') { ?>
-                <table class="table example_long table-striped table-bordered table-hover">
-                    <thead class="bg-primary-gradient text-white">
-                        <tr>
-                            <th>#</th>
-                            <th>Gender Diversity Name</th>
-                            <th>Participant Name</th>
-                            <th>Gender</th>
-                            <th>Contact number</th>
-                            <th>Email Id</th>
-                            <th>Organization</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <?php
-                        $i = 1;
-                        foreach ($table_list as $list) {
-                        ?>
+                <div class="table-responsive">
+                    <table class="table example_long table-striped table-bordered table-hover">
+                        <thead class="bg-primary-gradient text-white">
                             <tr>
-                                <td><?php echo $i++; ?></td>
-                                <td><?php echo $list['CifGenderDiversity']['event_name']; ?></td>
-                                <td><?php echo $list['CifGenderDiversityParticipant']['participant_name']; ?></td>
-                                <td><?php echo $list['CifGenderDiversityParticipant']['gender']; ?></td>
-                                <td><?php echo $list['CifGenderDiversityParticipant']['contact_number']; ?></td>
-                                <td><?php echo $list['CifGenderDiversityParticipant']['email']; ?></td>
-                                <td><?php echo $list['CifGenderDiversityParticipant']['organization']; ?></td>
+                                <th>#</th>
+                                <th>Gender Diversity Name</th>
+                                <th>Participant Name</th>
+                                <th>Gender</th>
+                                <th>Contact number</th>
+                                <th>Email Id</th>
+                                <th>Organization</th>
                             </tr>
-                        <?php
-                        } ?>
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody>
+                            <?php
+                            $i = 1;
+                            foreach ($table_list as $list) {
+                            ?>
+                                <tr>
+                                    <td><?php echo $i++; ?></td>
+                                    <td><?php echo $list['CifGenderDiversity']['event_name']; ?></td>
+                                    <td><?php echo $list['CifGenderDiversityParticipant']['participant_name']; ?></td>
+                                    <td><?php echo $list['CifGenderDiversityParticipant']['gender']; ?></td>
+                                    <td><?php echo $list['CifGenderDiversityParticipant']['contact_number']; ?></td>
+                                    <td><?php echo $list['CifGenderDiversityParticipant']['email']; ?></td>
+                                    <td><?php echo $list['CifGenderDiversityParticipant']['organization']; ?></td>
+                                </tr>
+                            <?php
+                            } ?>
+                        </tbody>
+                    </table>
+                </div>
             <?php } ?>
 
             <?php if ($queryString['type'] == 'External Event Participants') { ?>
-                <table class="table example_long table-striped table-bordered table-hover">
-                    <thead class="bg-primary-gradient text-white">
-                        <tr>
-                            <th>#</th>
-                            <th>External Event Participant Name</th>
-                            <th>Participant Name</th>
-                            <th>Gender</th>
-                            <th>Contact number</th>
-                            <th>Email Id</th>
-                            <th>Organization</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <?php
-                        $i = 1;
-                        foreach ($table_list as $list) {    ?>
+                <div class="table-responsive">
+                    <table class="table example_long table-striped table-bordered table-hover">
+                        <thead class="bg-primary-gradient text-white">
                             <tr>
-                                <td><?php echo $i++; ?></td>
-                                <td><?php echo $list['CifExternalEvent']['event_name']; ?></td>
-                                <td><?php echo $list['CifExternalEventParticipant']['participant_name']; ?></td>
-                                <td><?php echo $list['CifExternalEventParticipant']['gender']; ?></td>
-                                <td><?php echo $list['CifExternalEventParticipant']['contact_number']; ?></td>
-                                <td><?php echo $list['CifExternalEventParticipant']['email']; ?></td>
-                                <td><?php echo $list['CifExternalEventParticipant']['organization']; ?></td>
-
+                                <th>#</th>
+                                <th>External Event Participant Name</th>
+                                <th>Participant Name</th>
+                                <th>Gender</th>
+                                <th>Contact number</th>
+                                <th>Email Id</th>
+                                <th>Organization</th>
                             </tr>
-                        <?php } ?>
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody>
+                            <?php
+                            $i = 1;
+                            foreach ($table_list as $list) {    ?>
+                                <tr>
+                                    <td><?php echo $i++; ?></td>
+                                    <td><?php echo $list['CifExternalEvent']['event_name']; ?></td>
+                                    <td><?php echo $list['CifExternalEventParticipant']['participant_name']; ?></td>
+                                    <td><?php echo $list['CifExternalEventParticipant']['gender']; ?></td>
+                                    <td><?php echo $list['CifExternalEventParticipant']['contact_number']; ?></td>
+                                    <td><?php echo $list['CifExternalEventParticipant']['email']; ?></td>
+                                    <td><?php echo $list['CifExternalEventParticipant']['organization']; ?></td>
+                                </tr>
+                            <?php } ?>
+                        </tbody>
+                    </table>
+                </div>
             <?php } ?>
 
             <?php if ($queryString['type'] == 'Connects') { ?>
@@ -296,7 +299,7 @@
     </div>
 </div>
 <script>
- $(function() {
+    $(function() {
         'use strict'
 
         $('.model_slim_scroll').slimScroll({
@@ -306,9 +309,10 @@
             selector: '[data-toggle="tooltip"]'
         });
     });
-    function loadParticipant(id,type){
+
+    function loadParticipant(id, type) {
         //console.log(id,type);
-        let url = encodeURI('<?php echo Router::url(array("controller" => "Admin", "action" =>"viewParticipant")); ?>?id='+id+'&type='+type);
+        let url = encodeURI('<?php echo Router::url(array("controller" => "Admin", "action" => "viewParticipant")); ?>?id=' + id + '&type=' + type);
         $('#chartDetailModalContent').load(url, function() {
             $('#chartDetailModal').modal({
                 show: true

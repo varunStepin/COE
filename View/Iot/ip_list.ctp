@@ -33,7 +33,7 @@
 					<thead>
 						<tr class="bg-info">
 							<th>#</th>
-              <th>Phase</th>
+           
 							<th>Startup Name</th>
 							<th>Filling  Date</th>
                          <!--   <th>Examination  Date</th>-->
@@ -56,7 +56,7 @@
 						?>
 						<tr>
 							<td><?php echo $i++;?></td>
-              <td><?php echo $list['IotIntellectualProperty']['phase'];?></td>
+             
 							<td><?php echo $list['IotStartUp']['start_up_name'];?></td>
                             <td><?php $date_filling = $list['IotIntellectualProperty']['date_of_filling'];
                                 echo ($date_filling) ? date('d-m-Y',strtotime($date_filling)) : '';

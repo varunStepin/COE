@@ -107,18 +107,22 @@
             series: [{
                 name: 'Target',
                 data: [
-                    ['Embedded Course',academia_array['EmbeddedCourse']['Target']['count'],'EmbeddedCourse-YearWise-Target',colors1[0]],
-                    ['Training in process',academia_array['TrainingProcess']['Target']['count'],'TrainingProcess-YearWise-Target',colors1[0]],
-                    ['Boot Camp',academia_array['BootCamp']['Target']['count'],'BootCamp-YearWise-Target',colors1[0]],
+                    ['Embedded  Course',academia_array['EmbeddedCourse']['Target']['count'],'EmbeddedCourse-YearWise-Target',colors1[0]],
+                    ['Training  in  process',academia_array['TrainingProcess']['Target']['count'],'TrainingProcess-YearWise-Target',colors1[0]],
+                    ['Boot  Camp',academia_array['BootCamp']['Target']['count'],'BootCamp-YearWise-Target',colors1[0]],
+                    ['Drone  Technology',academia_array['DroneTechnology']['Target']['count'],'DroneTechnology-YearWise-Target',colors1[0]],
+                    ['Value  Stream  Course',academia_array['ValueStreamCourse']['Target']['count'],'ValueStreamCourse-YearWise-Target',colors1[0]],
                 ],
                 keys: ['name', 'y', 'drilldown','color'],
                 color:colors1[0]
             }, {
                 name: 'Achieved',
                 data: [
-                    ['Embedded Course',academia_array['EmbeddedCourse']['Achieve']['count'],'EmbeddedCourse-YearWise-Achieved',colors1[1]],
-                    ['Training in process',academia_array['TrainingProcess']['Achieve']['count'],'TrainingProcess-YearWise-Achieved',colors1[1]],
-                    ['Boot Camp',academia_array['BootCamp']['Achieve']['count'],'BootCamp-YearWise-Achieved',colors1[1]],
+                    ['Embedded  Course',academia_array['EmbeddedCourse']['Achieve']['count'],'EmbeddedCourse-YearWise-Achieved',colors1[1]],
+                    ['Training  in  process',academia_array['TrainingProcess']['Achieve']['count'],'TrainingProcess-YearWise-Achieved',colors1[1]],
+                    ['Boot  Camp',academia_array['BootCamp']['Achieve']['count'],'BootCamp-YearWise-Achieved',colors1[1]],
+                    ['Drone  Technology',academia_array['DroneTechnology']['Achieve']['count'],'DroneTechnology-YearWise-Achieved',colors1[1]],
+                    ['Value  Stream  Course',academia_array['ValueStreamCourse']['Achieve']['count'],'ValueStreamCourse-YearWise-Achieved',colors1[1]],
                 ],
                 keys: ['name', 'y', 'drilldown','color'],
                 color:colors1[1]

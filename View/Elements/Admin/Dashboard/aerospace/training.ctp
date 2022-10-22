@@ -111,6 +111,7 @@
                     ['Internship / Foundation Course',training_array['Internship']['Target']['count'],'Internship-YearWise-Target',colors1[0]],
                     ['Advance / Project Based Course',training_array['AdvanceCourse']['Target']['count'],'AdvanceCourse-YearWise-Target',colors1[0]],
                     ['Orientation / Awareness Course',training_array['OrientationCourse']['Target']['count'],'OrientationCourse-YearWise-Target',colors1[0]],
+                    ['Starter Course',training_array['StarterCourse']['Target']['count'],'StarterCourse-YearWise-Target',colors1[0]],
                 ],
                 keys: ['name', 'y', 'drilldown','color'],
                 color:colors1[0]
@@ -120,6 +121,7 @@
                     ['Internship / Foundation Course',training_array['Internship']['Achieve']['count'],'Internship-YearWise-Achieved',colors1[1]],
                     ['Advance / Project Based Course',training_array['AdvanceCourse']['Achieve']['count'],'AdvanceCourse-YearWise-Achieved',colors1[1]],
                     ['Orientation / Awareness Course',training_array['OrientationCourse']['Achieve']['count'],'OrientationCourse-YearWise-Achieved',colors1[1]],
+                    ['Starter Course',training_array['StarterCourse']['Achieve']['count'],'StarterCourse-YearWise-Achieved',colors1[1]],
                 ],
                 keys: ['name', 'y', 'drilldown','color'],
                 color:colors1[1]

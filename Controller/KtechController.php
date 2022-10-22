@@ -263,6 +263,368 @@ class KtechController extends AppController {
 
         $this->changeCSRFToken();
     }
+public function hackathons($id = null)
+    {
+        $this->layout = 'fab_layout';
+        $this->_userSessionCheckout();
+        $this->getYear();
+        $this->getMonth();
+        $this->loadModel('TbiStartup');
 
+        $unincubatedStartUpsDb = $this->TbiStartup->find('all', array("conditions" => array("university" => 'CCamp', 'is_selected' => 1, 'is_incubated' => 0), "order" => array('TbiStartup.startup_name ASC')));
+
+        $unselectedStartUps = [];
+        $StartUpsDetails = [];
+        foreach ($unincubatedStartUpsDb as $list) {
+            $unselectedStartUps[$list['TbiStartup']['id']] = $list['TbiStartup']['startup_name'];
+            $StartUpsDetails[$list['TbiStartup']['id']]['details'] = $list['TbiStartup']['details'];
+            $StartUpsDetails[$list['TbiStartup']['id']]['startup_type'] = $list['TbiStartup']['startup_type'];
+        }
+        $this->set('unselectedStartUps', $unselectedStartUps);
+        $this->loadModel('KtechHackthon');
+
+        if (!empty($this->request->data)) {
+            if ($this->request->data['KtechHackthon']['csrf_token'] != $this->Session->read('CSRFTOKEN')) {
+                $this->Session->setFlash("<div id='php-alert' class='alert alert-dismissible alert-danger'><span class='glyphicon glyphicon-remove-circle'></span><button type='button' class='close' data-dismiss='alert' aria-label='Close'><span aria-hidden='true' style='color:black;'>&times;</span></button> Unauthorized access. Please try again.</div>");
+                $this->redirect(array('action' => 'hackathons'));
+            }
+            if ($this->request->data['KtechHackthon']['type'] == "edit") {
+                $this->request->data = $this->KtechHackthon->read(null, $this->request->data['KtechHackthon']['id']);
+                $this->request->data['KtechHackthon']['month'] = $this->request->data['KtechHackthon']['month'] . '-' . $this->request->data['KtechHackthon']['year'];
+            } else if ($this->request->data['KtechHackthon']['type'] == "delete") {
+                $hackathon_id = $this->request->data['KtechHackthon']['id'];
+
+                if ($this->KtechHackthon->delete($hackathon_id)) {
+                    $this->Session->setFlash("<div id='php-alert' class='alert alert-dismissible alert-danger'><span class='glyphicon glyphicon-remove-circle'></span><button type='button' class='close' data-dismiss='alert' aria-label='Close'><span aria-hidden='true' style='color:black;'>&times;</span></button> Data has been deleted Successfully.</div>");
+                    $this->redirect(array('action' => 'hackathons'));
+                } else {
+                    $this->Session->setFlash("<div id='php-alert' class='alert alert-dismissible alert-danger'><span class='glyphicon glyphicon-remove-circle'></span><button type='button' class='close' data-dismiss='alert' aria-label='Close'><span aria-hidden='true' style='color:black;'>&times;</span></button>Failed to delete.Please try again.</div>");
+                    $this->redirect(array('action' => 'hackathons'));
+                }
+            } else if ($this->request->data['KtechHackthon']['type'] == "insert") {
+
+                if ($this->request->data['KtechHackthon']['id']) {
+                    $message = "Updated Successfully";
+                } else {
+                    $message = "Added Successfully";
+                }
+
+                $monthYear = explode('-', $this->request->data['KtechHackthon']['month']);
+                $this->request->data['KtechHackthon']['month'] = $monthYear[0];
+                $this->request->data['KtechHackthon']['year'] = $monthYear[1];
+
+                $this->KtechHackthon->save($this->request->data);
+                $this->Session->setFlash("<div id='php-alert' class='alert alert-dismissible alert-success'><span class='glyphicon glyphicon-remove-circle'></span><button type='button' class='close' data-dismiss='alert' aria-label='Close'><span aria-hidden='true' style='color:black;'>&times;</span></button>" . $message . ".</div>");
+                $this->redirect(array('action' => 'hackathons'));
+            }
+        }
+        $this->KtechHackthon->bindModel(array('belongsTo' => array('TbiStartup')));
+
+        $table_list = $this->KtechHackthon->find('all', array('order' => array('KtechHackthon.id DESC')));
+        $this->set('table_list', $table_list);
+
+        $this->changeCSRFToken();
+    }
+
+    public function preIdeation($id = null)
+    {
+        $this->layout = 'fab_layout';
+        $this->_userSessionCheckout();
+        $this->getYear();
+        $this->getMonth();
+        $this->loadModel('TbiStartup');
+
+        $unincubatedStartUpsDb = $this->TbiStartup->find('all', array("conditions" => array("university" => 'CCamp', 'is_selected' => 1, 'is_incubated' => 0), "order" => array('TbiStartup.startup_name ASC')));
+
+        $unselectedStartUps = [];
+        $StartUpsDetails = [];
+        foreach ($unincubatedStartUpsDb as $list) {
+            $unselectedStartUps[$list['TbiStartup']['id']] = $list['TbiStartup']['startup_name'];
+            $StartUpsDetails[$list['TbiStartup']['id']]['details'] = $list['TbiStartup']['details'];
+            $StartUpsDetails[$list['TbiStartup']['id']]['startup_type'] = $list['TbiStartup']['startup_type'];
+        }
+        $this->set('unselectedStartUps', $unselectedStartUps);
+        $this->loadModel('KtechPreIdeation');
+
+        if (!empty($this->request->data)) {
+            if ($this->request->data['KtechPreIdeation']['csrf_token'] != $this->Session->read('CSRFTOKEN')) {
+                $this->Session->setFlash("<div id='php-alert' class='alert alert-dismissible alert-danger'><span class='glyphicon glyphicon-remove-circle'></span><button type='button' class='close' data-dismiss='alert' aria-label='Close'><span aria-hidden='true' style='color:black;'>&times;</span></button> Unauthorized access. Please try again.</div>");
+                $this->redirect(array('action' => 'preIdeation'));
+            }
+            if ($this->request->data['KtechPreIdeation']['type'] == "edit") {
+                $this->request->data = $this->KtechPreIdeation->read(null, $this->request->data['KtechPreIdeation']['id']);
+                $this->request->data['KtechPreIdeation']['month'] = $this->request->data['KtechPreIdeation']['month'] . '-' . $this->request->data['KtechPreIdeation']['year'];
+            } else if ($this->request->data['KtechPreIdeation']['type'] == "delete") {
+                $hackathon_id = $this->request->data['KtechPreIdeation']['id'];
+
+                if ($this->KtechPreIdeation->delete($hackathon_id)) {
+                    $this->Session->setFlash("<div id='php-alert' class='alert alert-dismissible alert-danger'><span class='glyphicon glyphicon-remove-circle'></span><button type='button' class='close' data-dismiss='alert' aria-label='Close'><span aria-hidden='true' style='color:black;'>&times;</span></button> Data has been deleted Successfully.</div>");
+                    $this->redirect(array('action' => 'preIdeation'));
+                } else {
+                    $this->Session->setFlash("<div id='php-alert' class='alert alert-dismissible alert-danger'><span class='glyphicon glyphicon-remove-circle'></span><button type='button' class='close' data-dismiss='alert' aria-label='Close'><span aria-hidden='true' style='color:black;'>&times;</span></button>Failed to delete.Please try again.</div>");
+                    $this->redirect(array('action' => 'preIdeation'));
+                }
+            } else if ($this->request->data['KtechPreIdeation']['type'] == "insert") {
+
+                if ($this->request->data['KtechPreIdeation']['id']) {
+                    $message = "Updated Successfully";
+                } else {
+                    $message = "Added Successfully";
+                }
+
+                $monthYear = explode('-', $this->request->data['KtechPreIdeation']['month']);
+                $this->request->data['KtechPreIdeation']['month'] = $monthYear[0];
+                $this->request->data['KtechPreIdeation']['year'] = $monthYear[1];
+                $this->KtechPreIdeation->save($this->request->data);
+                $this->Session->setFlash("<div id='php-alert' class='alert alert-dismissible alert-success'><span class='glyphicon glyphicon-remove-circle'></span><button type='button' class='close' data-dismiss='alert' aria-label='Close'><span aria-hidden='true' style='color:black;'>&times;</span></button>" . $message . ".</div>");
+                $this->redirect(array('action' => 'preIdeation'));
+            }
+        }
+        $this->KtechPreIdeation->bindModel(array('belongsTo' => array('TbiStartup')));
+
+        $table_list = $this->KtechPreIdeation->find('all', array('order' => array('KtechPreIdeation.id DESC')));
+        $this->set('table_list', $table_list);
+
+        $this->changeCSRFToken();
+    }
+    public function ideationWorkshop($id = null)
+    {
+        $this->layout = 'fab_layout';
+        $this->_userSessionCheckout();
+        $this->getYear();
+        $this->getMonth();
+        $this->loadModel('TbiStartup');
+
+        $unincubatedStartUpsDb = $this->TbiStartup->find('all', array("conditions" => array("university" => 'CCamp', 'is_selected' => 1, 'is_incubated' => 0), "order" => array('TbiStartup.startup_name ASC')));
+
+        $unselectedStartUps = [];
+        $StartUpsDetails = [];
+        foreach ($unincubatedStartUpsDb as $list) {
+            $unselectedStartUps[$list['TbiStartup']['id']] = $list['TbiStartup']['startup_name'];
+            $StartUpsDetails[$list['TbiStartup']['id']]['details'] = $list['TbiStartup']['details'];
+            $StartUpsDetails[$list['TbiStartup']['id']]['startup_type'] = $list['TbiStartup']['startup_type'];
+        }
+        $this->set('unselectedStartUps', $unselectedStartUps);
+        $this->loadModel('KtechIdeationWorkshop');
+
+        if (!empty($this->request->data)) {
+            if ($this->request->data['KtechIdeationWorkshop']['csrf_token'] != $this->Session->read('CSRFTOKEN')) {
+                $this->Session->setFlash("<div id='php-alert' class='alert alert-dismissible alert-danger'><span class='glyphicon glyphicon-remove-circle'></span><button type='button' class='close' data-dismiss='alert' aria-label='Close'><span aria-hidden='true' style='color:black;'>&times;</span></button> Unauthorized access. Please try again.</div>");
+                $this->redirect(array('action' => 'ideationWorkshop'));
+            }
+            if ($this->request->data['KtechIdeationWorkshop']['type'] == "edit") {
+                $this->request->data = $this->KtechIdeationWorkshop->read(null, $this->request->data['KtechIdeationWorkshop']['id']);
+                $this->request->data['KtechIdeationWorkshop']['month'] = $this->request->data['KtechIdeationWorkshop']['month'] . '-' . $this->request->data['KtechIdeationWorkshop']['year'];
+            } else if ($this->request->data['KtechIdeationWorkshop']['type'] == "delete") {
+                $hackathon_id = $this->request->data['KtechIdeationWorkshop']['id'];
+
+                if ($this->KtechIdeationWorkshop->delete($hackathon_id)) {
+                    $this->Session->setFlash("<div id='php-alert' class='alert alert-dismissible alert-danger'><span class='glyphicon glyphicon-remove-circle'></span><button type='button' class='close' data-dismiss='alert' aria-label='Close'><span aria-hidden='true' style='color:black;'>&times;</span></button> Data has been deleted Successfully.</div>");
+                    $this->redirect(array('action' => 'ideationWorkshop'));
+                } else {
+                    $this->Session->setFlash("<div id='php-alert' class='alert alert-dismissible alert-danger'><span class='glyphicon glyphicon-remove-circle'></span><button type='button' class='close' data-dismiss='alert' aria-label='Close'><span aria-hidden='true' style='color:black;'>&times;</span></button>Failed to delete.Please try again.</div>");
+                    $this->redirect(array('action' => 'ideationWorkshop'));
+                }
+            } else if ($this->request->data['KtechIdeationWorkshop']['type'] == "insert") {
+
+                if ($this->request->data['KtechIdeationWorkshop']['id']) {
+                    $message = "Updated Successfully";
+                } else {
+                    $message = "Added Successfully";
+                }
+
+                $monthYear = explode('-', $this->request->data['KtechIdeationWorkshop']['month']);
+                $this->request->data['KtechIdeationWorkshop']['month'] = $monthYear[0];
+                $this->request->data['KtechIdeationWorkshop']['year'] = $monthYear[1];
+
+                $this->KtechIdeationWorkshop->save($this->request->data);
+                $this->Session->setFlash("<div id='php-alert' class='alert alert-dismissible alert-success'><span class='glyphicon glyphicon-remove-circle'></span><button type='button' class='close' data-dismiss='alert' aria-label='Close'><span aria-hidden='true' style='color:black;'>&times;</span></button>" . $message . ".</div>");
+                $this->redirect(array('action' => 'ideationWorkshop'));
+            }
+        }
+        $this->KtechIdeationWorkshop->bindModel(array('belongsTo' => array('TbiStartup')));
+
+        $table_list = $this->KtechIdeationWorkshop->find('all', array('order' => array('KtechIdeationWorkshop.id DESC')));
+        $this->set('table_list', $table_list);
+
+        $this->changeCSRFToken();
+    }
+    public function ecosystemBuildingService($id = null)
+    {
+        $this->layout = 'fab_layout';
+        $this->_userSessionCheckout();
+        $this->getYear();
+        $this->getMonth();
+        $this->loadModel('TbiStartup');
+
+        $unincubatedStartUpsDb = $this->TbiStartup->find('all', array("conditions" => array("university" => 'CCamp', 'is_selected' => 1, 'is_incubated' => 0), "order" => array('TbiStartup.startup_name ASC')));
+
+        $unselectedStartUps = [];
+        $StartUpsDetails = [];
+        foreach ($unincubatedStartUpsDb as $list) {
+            $unselectedStartUps[$list['TbiStartup']['id']] = $list['TbiStartup']['startup_name'];
+            $StartUpsDetails[$list['TbiStartup']['id']]['details'] = $list['TbiStartup']['details'];
+            $StartUpsDetails[$list['TbiStartup']['id']]['startup_type'] = $list['TbiStartup']['startup_type'];
+        }
+        $this->set('unselectedStartUps', $unselectedStartUps);
+        $this->loadModel('KtechEcosystemBuildingService');
+
+        if (!empty($this->request->data)) {
+            if ($this->request->data['KtechEcosystemBuildingService']['csrf_token'] != $this->Session->read('CSRFTOKEN')) {
+                $this->Session->setFlash("<div id='php-alert' class='alert alert-dismissible alert-danger'><span class='glyphicon glyphicon-remove-circle'></span><button type='button' class='close' data-dismiss='alert' aria-label='Close'><span aria-hidden='true' style='color:black;'>&times;</span></button> Unauthorized access. Please try again.</div>");
+                $this->redirect(array('action' => 'ecosystemBuildingService'));
+            }
+            if ($this->request->data['KtechEcosystemBuildingService']['type'] == "edit") {
+                $this->request->data = $this->KtechEcosystemBuildingService->read(null, $this->request->data['KtechEcosystemBuildingService']['id']);
+                $this->request->data['KtechEcosystemBuildingService']['month'] = $this->request->data['KtechEcosystemBuildingService']['month'] . '-' . $this->request->data['KtechEcosystemBuildingService']['year'];
+            } else if ($this->request->data['KtechEcosystemBuildingService']['type'] == "delete") {
+                $hackathon_id = $this->request->data['KtechEcosystemBuildingService']['id'];
+
+                if ($this->KtechEcosystemBuildingService->delete($hackathon_id)) {
+                    $this->Session->setFlash("<div id='php-alert' class='alert alert-dismissible alert-danger'><span class='glyphicon glyphicon-remove-circle'></span><button type='button' class='close' data-dismiss='alert' aria-label='Close'><span aria-hidden='true' style='color:black;'>&times;</span></button> Data has been deleted Successfully.</div>");
+                    $this->redirect(array('action' => 'ecosystemBuildingService'));
+                } else {
+                    $this->Session->setFlash("<div id='php-alert' class='alert alert-dismissible alert-danger'><span class='glyphicon glyphicon-remove-circle'></span><button type='button' class='close' data-dismiss='alert' aria-label='Close'><span aria-hidden='true' style='color:black;'>&times;</span></button>Failed to delete.Please try again.</div>");
+                    $this->redirect(array('action' => 'ecosystemBuildingService'));
+                }
+            } else if ($this->request->data['KtechEcosystemBuildingService']['type'] == "insert") {
+
+                if ($this->request->data['KtechEcosystemBuildingService']['id']) {
+                    $message = "Updated Successfully";
+                } else {
+                    $message = "Added Successfully";
+                }
+
+                // $monthYear = explode('-', $this->request->data['KtechEcosystemBuildingService']['date']);
+                // $this->request->data['KtechEcosystemBuildingService']['month'] = date('F', mktime(0, 0, 0, $monthYear[1], 10));
+                // $this->request->data['KtechEcosystemBuildingService']['year'] = $monthYear[2];
+
+                $monthYear = explode('-', $this->request->data['KtechEcosystemBuildingService']['month']);
+                $this->request->data['KtechEcosystemBuildingService']['month'] = $monthYear[0];
+                $this->request->data['KtechEcosystemBuildingService']['year'] = $monthYear[1];
+
+                $this->KtechEcosystemBuildingService->save($this->request->data);
+                $this->Session->setFlash("<div id='php-alert' class='alert alert-dismissible alert-success'><span class='glyphicon glyphicon-remove-circle'></span><button type='button' class='close' data-dismiss='alert' aria-label='Close'><span aria-hidden='true' style='color:black;'>&times;</span></button>" . $message . ".</div>");
+                $this->redirect(array('action' => 'ecosystemBuildingService'));
+            }
+        }
+        $this->KtechEcosystemBuildingService->bindModel(array('belongsTo' => array('TbiStartup')));
+
+        $table_list = $this->KtechEcosystemBuildingService->find('all', array('order' => array('KtechEcosystemBuildingService.id DESC')));
+        $this->set('table_list', $table_list);
+
+        $this->changeCSRFToken();
+    }
+    public function workshop($id = null)
+    {
+        $this->layout = 'fab_layout';
+        $this->_userSessionCheckout();
+        $this->getYear();
+        $this->getMonth();
+        $this->loadModel('TbiStartup');
+
+        $unincubatedStartUpsDb = $this->TbiStartup->find('all', array("conditions" => array("university" => 'CCamp', 'is_selected' => 1, 'is_incubated' => 0), "order" => array('TbiStartup.startup_name ASC')));
+
+        $unselectedStartUps = [];
+        $StartUpsDetails = [];
+        foreach ($unincubatedStartUpsDb as $list) {
+            $unselectedStartUps[$list['TbiStartup']['id']] = $list['TbiStartup']['startup_name'];
+            $StartUpsDetails[$list['TbiStartup']['id']]['details'] = $list['TbiStartup']['details'];
+            $StartUpsDetails[$list['TbiStartup']['id']]['startup_type'] = $list['TbiStartup']['startup_type'];
+        }
+        $this->set('unselectedStartUps', $unselectedStartUps);
+        $this->loadModel('KtechWorkshop');
+
+        if (!empty($this->request->data)) {
+            if ($this->request->data['KtechWorkshop']['csrf_token'] != $this->Session->read('CSRFTOKEN')) {
+                $this->Session->setFlash("<div id='php-alert' class='alert alert-dismissible alert-danger'><span class='glyphicon glyphicon-remove-circle'></span><button type='button' class='close' data-dismiss='alert' aria-label='Close'><span aria-hidden='true' style='color:black;'>&times;</span></button> Unauthorized access. Please try again.</div>");
+                $this->redirect(array('action' => 'workshop'));
+            }
+            if ($this->request->data['KtechWorkshop']['type'] == "edit") {
+                $this->request->data = $this->KtechWorkshop->read(null, $this->request->data['KtechWorkshop']['id']);
+                $this->request->data['KtechWorkshop']['month'] = $this->request->data['KtechWorkshop']['month'] . '-' . $this->request->data['KtechWorkshop']['year'];
+            } else if ($this->request->data['KtechWorkshop']['type'] == "delete") {
+                $hackathon_id = $this->request->data['KtechWorkshop']['id'];
+
+                if ($this->KtechWorkshop->delete($hackathon_id)) {
+                    $this->Session->setFlash("<div id='php-alert' class='alert alert-dismissible alert-danger'><span class='glyphicon glyphicon-remove-circle'></span><button type='button' class='close' data-dismiss='alert' aria-label='Close'><span aria-hidden='true' style='color:black;'>&times;</span></button> Data has been deleted Successfully.</div>");
+                    $this->redirect(array('action' => 'workshop'));
+                } else {
+                    $this->Session->setFlash("<div id='php-alert' class='alert alert-dismissible alert-danger'><span class='glyphicon glyphicon-remove-circle'></span><button type='button' class='close' data-dismiss='alert' aria-label='Close'><span aria-hidden='true' style='color:black;'>&times;</span></button>Failed to delete.Please try again.</div>");
+                    $this->redirect(array('action' => 'workshop'));
+                }
+            } else if ($this->request->data['KtechWorkshop']['type'] == "insert") {
+
+                if ($this->request->data['KtechWorkshop']['id']) {
+                    $message = "Updated Successfully";
+                } else {
+                    $message = "Added Successfully";
+                }
+
+                $monthYear = explode('-', $this->request->data['KtechWorkshop']['month']);
+                $this->request->data['KtechWorkshop']['month'] = $monthYear[0];
+                $this->request->data['KtechWorkshop']['year'] = $monthYear[1];
+
+                $this->KtechWorkshop->save($this->request->data);
+                $this->Session->setFlash("<div id='php-alert' class='alert alert-dismissible alert-success'><span class='glyphicon glyphicon-remove-circle'></span><button type='button' class='close' data-dismiss='alert' aria-label='Close'><span aria-hidden='true' style='color:black;'>&times;</span></button>" . $message . ".</div>");
+                $this->redirect(array('action' => 'workshop'));
+            }
+        }
+        $this->KtechWorkshop->bindModel(array('belongsTo' => array('TbiStartup')));
+
+        $table_list = $this->KtechWorkshop->find('all', array('order' => array('KtechWorkshop.id DESC')));
+        $this->set('table_list', $table_list);
+
+        $this->changeCSRFToken();
+    }
+    public function noOfNewProducts($id = null)
+    {
+        $this->layout = 'fab_layout';
+        $this->_userSessionCheckout();
+        $this->getYear();
+        $this->getMonth();
+            
+        $this->loadModel('KtechNoOfNewProducts');
+
+        if (!empty($this->request->data)) {
+            if ($this->request->data['KtechNoOfNewProducts']['csrf_token'] != $this->Session->read('CSRFTOKEN')) {
+                $this->Session->setFlash("<div id='php-alert' class='alert alert-dismissible alert-danger'><span class='glyphicon glyphicon-remove-circle'></span><button type='button' class='close' data-dismiss='alert' aria-label='Close'><span aria-hidden='true' style='color:black;'>&times;</span></button> Unauthorized access. Please try again.</div>");
+                $this->redirect(array('action' => 'noOfNewProducts'));
+            }
+            if ($this->request->data['KtechNoOfNewProducts']['type'] == "edit") {
+                $this->request->data = $this->KtechNoOfNewProducts->read(null, $this->request->data['KtechNoOfNewProducts']['id']);
+                $this->request->data['KtechNoOfNewProducts']['month'] = $this->request->data['KtechNoOfNewProducts']['month'] . '-' . $this->request->data['KtechNoOfNewProducts']['year'];
+            } else if ($this->request->data['KtechNoOfNewProducts']['type'] == "delete") {
+                $hackathon_id = $this->request->data['KtechNoOfNewProducts']['id'];
+
+                if ($this->KtechNoOfNewProducts->delete($hackathon_id)) {
+                    $this->Session->setFlash("<div id='php-alert' class='alert alert-dismissible alert-danger'><span class='glyphicon glyphicon-remove-circle'></span><button type='button' class='close' data-dismiss='alert' aria-label='Close'><span aria-hidden='true' style='color:black;'>&times;</span></button> Data has been deleted Successfully.</div>");
+                    $this->redirect(array('action' => 'noOfNewProducts'));
+                } else {
+                    $this->Session->setFlash("<div id='php-alert' class='alert alert-dismissible alert-danger'><span class='glyphicon glyphicon-remove-circle'></span><button type='button' class='close' data-dismiss='alert' aria-label='Close'><span aria-hidden='true' style='color:black;'>&times;</span></button>Failed to delete.Please try again.</div>");
+                    $this->redirect(array('action' => 'noOfNewProducts'));
+                }
+            } else if ($this->request->data['KtechNoOfNewProducts']['type'] == "insert") {
+
+                if ($this->request->data['KtechNoOfNewProducts']['id']) {
+                    $message = "Updated Successfully";
+                } else {
+                    $message = "Added Successfully";
+                }  
+                $monthYear = explode('-', $this->request->data['KtechNoOfNewProducts']['month']);
+                $this->request->data['KtechNoOfNewProducts']['month'] = $monthYear[0];
+                $this->request->data['KtechNoOfNewProducts']['year'] = $monthYear[1];
+
+                $this->KtechNoOfNewProducts->save($this->request->data);
+                $this->Session->setFlash("<div id='php-alert' class='alert alert-dismissible alert-success'><span class='glyphicon glyphicon-remove-circle'></span><button type='button' class='close' data-dismiss='alert' aria-label='Close'><span aria-hidden='true' style='color:black;'>&times;</span></button>" . $message . ".</div>");
+                $this->redirect(array('action' => 'noOfNewProducts'));
+            }
+        }
+       
+        $table_list = $this->KtechNoOfNewProducts->find('all', array('order' => array('KtechNoOfNewProducts.id DESC')));
+        $this->set('table_list', $table_list);
+
+        $this->changeCSRFToken();
+    }
 
 }
